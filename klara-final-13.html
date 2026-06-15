@@ -1,0 +1,2169 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Klara — Le SaaS tout-en-un pour freelances français</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet"/>
+<!-- SUPABASE -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL = 'https://zdfihdkhdhowxpnmgxcb.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_sPx94pRlBE_X2vcALawvPw_0aX9RCtc';
+let klaraDB = null;
+try { klaraDB = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY); } catch(e) {}
+</script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f0f5ff;
+  --bg2:#e8eeff;
+  --surface:#ffffff;
+  --border:#c8d8f5;
+  --border2:#a8c0ef;
+  --blue:#2563eb;
+  --blue-light:#3b82f6;
+  --blue-dark:#1d4ed8;
+  --cream:#1e3a6e;
+  --text:#334155;
+  --muted:#64748b;
+  --green:#059669;
+  --gold:#d97706;
+  --red:#dc2626;
+  --sidebar-w:220px;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-weight:300;overflow-x:hidden}
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+
+/* ============ PAGES ============ */
+.page{display:none;min-height:100vh}
+.page.active{display:block}
+
+/* ============ NAV ============ */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1.1rem 4rem;display:flex;align-items:center;justify-content:space-between;transition:all 0.4s;background:rgba(240,245,255,0.9);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+.logo{font-family:'DM Serif Display',serif;font-size:1.6rem;color:var(--blue-dark);cursor:pointer;letter-spacing:-0.02em}
+.logo em{color:var(--blue-light);font-style:italic}
+.nav-links{display:flex;align-items:center;gap:2rem;list-style:none}
+.nav-links a{color:var(--muted);text-decoration:none;font-size:0.875rem;transition:color 0.2s;cursor:pointer}
+.nav-links a:hover{color:var(--cream)}
+.nav-btn{background:var(--gold);color:#fff !important;padding:0.5rem 1.25rem;border-radius:4px;font-size:0.85rem;font-weight:600 !important;transition:all 0.2s !important}
+.nav-btn:hover{background:#b45309 !important;transform:translateY(-1px)}
+
+/* ============ HERO ============ */
+.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:8rem 2rem 4rem;position:relative;overflow:hidden}
+.grid-bg{position:absolute;inset:0;background-image:linear-gradient(rgba(37,99,235,0.08) 1px,transparent 1px),linear-gradient(90deg,rgba(37,99,235,0.08) 1px,transparent 1px);background-size:60px 60px;mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black,transparent)}
+.glow{position:absolute;width:700px;height:700px;background:radial-gradient(circle,rgba(37,99,235,0.08),transparent 70%);top:0;left:50%;transform:translateX(-50%);pointer-events:none}
+.hero-badge{display:inline-flex;align-items:center;gap:0.5rem;background:rgba(37,99,235,0.08);border:1px solid rgba(37,99,235,0.2);color:var(--blue);font-size:0.72rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;padding:0.45rem 1.1rem;border-radius:100px;margin-bottom:2rem;position:relative;z-index:1}
+.badge-dot{width:6px;height:6px;background:var(--green);border-radius:50%;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(5,150,105,0.4)}50%{box-shadow:0 0 0 6px rgba(5,150,105,0)}}
+h1{font-family:'DM Serif Display',serif;font-size:clamp(3rem,7vw,6rem);line-height:1.06;letter-spacing:-0.04em;color:var(--cream);max-width:900px;position:relative;z-index:1}
+h1 em{background:linear-gradient(135deg,var(--blue),var(--blue-light));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-style:italic}
+.hero-desc{font-size:clamp(1rem,2vw,1.15rem);color:var(--muted);max-width:520px;margin-top:1.5rem;line-height:1.7;position:relative;z-index:1}
+.hero-cta{display:flex;align-items:center;gap:1rem;margin-top:2.5rem;flex-wrap:wrap;justify-content:center;position:relative;z-index:1}
+.btn-primary{background:var(--blue);color:#fff;padding:0.9rem 2.2rem;border-radius:5px;font-size:0.95rem;font-weight:500;text-decoration:none;transition:all 0.25s;display:inline-flex;align-items:center;gap:0.5rem;border:none;cursor:pointer;font-family:inherit}
+.btn-primary:hover{background:var(--blue-dark);transform:translateY(-2px);box-shadow:0 12px 40px rgba(37,99,235,0.25)}
+.btn-gold{background:var(--gold);color:#fff;padding:0.9rem 2.2rem;border-radius:5px;font-size:0.95rem;font-weight:600;text-decoration:none;transition:all 0.25s;display:inline-flex;align-items:center;gap:0.5rem;border:none;cursor:pointer;font-family:inherit}
+.btn-gold:hover{background:#b45309;transform:translateY(-2px);box-shadow:0 12px 40px rgba(217,119,6,0.3)}
+.btn-ghost{color:var(--muted);font-size:0.9rem;text-decoration:none;display:inline-flex;align-items:center;gap:0.5rem;transition:color 0.2s;background:none;border:none;cursor:pointer;font-family:inherit}
+.btn-ghost:hover{color:var(--cream)}
+.social-proof{display:flex;align-items:center;gap:1rem;margin-top:2.5rem;position:relative;z-index:1}
+.avatars{display:flex}
+.av{width:34px;height:34px;border-radius:50%;border:2px solid var(--bg);display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:600;color:#fff;margin-left:-8px}
+.av:first-child{margin-left:0}
+.proof-text{font-size:0.78rem;color:var(--muted)}
+.proof-text strong{color:var(--cream)}
+
+/* ============ MOCKUP ============ */
+.preview-wrap{width:100%;max-width:960px;margin:4rem auto 0;padding:0 2rem;position:relative;z-index:1}
+.preview{background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden;box-shadow:0 20px 60px rgba(37,99,235,0.12),0 0 0 1px rgba(37,99,235,0.05)}
+.preview-topbar{display:flex;align-items:center;gap:0.5rem;padding:0.875rem 1.25rem;border-bottom:1px solid var(--border);background:var(--bg2)}
+.dot{width:10px;height:10px;border-radius:50%}
+.dr{background:#ff5f56}.dy{background:#ffbd2e}.dg{background:#27c93f}
+.preview-url{margin-left:1rem;background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:0.25rem 1rem;font-size:0.7rem;color:var(--muted);flex:1;max-width:280px}
+.preview-body{display:grid;grid-template-columns:190px 1fr;min-height:320px}
+.prev-sidebar{border-right:1px solid var(--border);padding:1.25rem 0.875rem;background:var(--bg2)}
+.prev-logo{font-family:'DM Serif Display',serif;font-size:1rem;color:var(--blue-dark);padding:0 0.5rem;margin-bottom:1.25rem}
+.prev-logo em{color:var(--blue-light);font-style:italic}
+.prev-item{display:flex;align-items:center;gap:0.5rem;padding:0.45rem 0.625rem;border-radius:4px;font-size:0.72rem;color:var(--muted);margin-bottom:0.1rem}
+.prev-item.act{background:rgba(37,99,235,0.1);color:var(--blue)}
+.prev-main{padding:1.25rem;background:var(--surface)}
+.prev-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:0.75rem;margin-bottom:1.25rem}
+.prev-kpi{background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:0.875rem}
+.prev-kpi-label{font-size:0.58rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em}
+.prev-kpi-val{font-family:'DM Serif Display',serif;font-size:1.3rem;color:var(--cream);margin-top:0.2rem}
+.prev-kpi-change{font-size:0.6rem;color:var(--green);margin-top:0.1rem}
+.prev-table{border:1px solid var(--border);border-radius:6px;overflow:hidden}
+.prev-th{display:grid;grid-template-columns:2fr 1fr 1fr;font-size:0.58rem;color:var(--muted);text-transform:uppercase;padding:0.6rem 1rem;border-bottom:1px solid var(--border);background:var(--bg2)}
+.prev-tr{display:grid;grid-template-columns:2fr 1fr 1fr;font-size:0.7rem;padding:0.55rem 1rem;border-bottom:1px solid var(--border);color:var(--text);opacity:0;animation:rowIn 0.4s ease forwards}
+.prev-tr:last-child{border-bottom:none}
+.prev-tr:nth-child(1){animation-delay:1s}
+.prev-tr:nth-child(2){animation-delay:1.3s}
+.prev-tr:nth-child(3){animation-delay:1.6s}
+@keyframes rowIn{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:translateX(0)}}
+.tbadge{display:inline-block;padding:0.15rem 0.5rem;border-radius:100px;font-size:0.6rem;font-weight:500}
+.bg{background:rgba(5,150,105,0.1);color:var(--green)}
+.by{background:rgba(217,119,6,0.1);color:var(--gold)}
+.br{background:rgba(220,38,38,0.1);color:var(--red)}
+
+/* ============ STATS ============ */
+.stats-section{display:flex;justify-content:center;flex-wrap:wrap;border-top:1px solid var(--border);border-bottom:1px solid var(--border);background:var(--surface)}
+.stat-item{text-align:center;padding:2.5rem 4rem;border-right:1px solid var(--border)}
+.stat-item:last-child{border-right:none}
+.stat-num{font-family:'DM Serif Display',serif;font-size:2.8rem;color:var(--blue);line-height:1;display:block}
+.stat-label{font-size:0.75rem;color:var(--muted);margin-top:0.35rem}
+
+/* ============ CALCULATOR ============ */
+.calc-section{padding:7rem 2rem;background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.section-inner{max-width:1100px;margin:0 auto}
+.section-tag{display:inline-flex;align-items:center;gap:0.5rem;font-size:0.68rem;text-transform:uppercase;letter-spacing:0.15em;color:var(--blue);margin-bottom:1rem}
+.section-tag::before{content:'';width:24px;height:1px;background:var(--blue)}
+h2{font-family:'DM Serif Display',serif;font-size:clamp(2rem,4vw,3rem);line-height:1.1;letter-spacing:-0.03em;color:var(--cream)}
+h2 em{background:linear-gradient(135deg,var(--blue),var(--blue-light));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-style:italic}
+.section-desc{color:var(--muted);max-width:500px;margin-top:1rem;font-size:1rem;line-height:1.7}
+
+.calc-wrap{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-top:3rem;box-shadow:0 8px 30px rgba(37,99,235,0.08)}
+.calc-header{background:linear-gradient(135deg,var(--blue),var(--blue-light));padding:2rem;color:#fff;text-align:center}
+.calc-header-title{font-family:'DM Serif Display',serif;font-size:1.5rem;margin-bottom:0.5rem}
+.calc-header-desc{font-size:0.85rem;opacity:0.85}
+.calc-body{display:grid;grid-template-columns:1fr 1fr;gap:0}
+
+.calc-inputs{padding:2.5rem;border-right:1px solid var(--border)}
+.calc-title{font-size:0.78rem;font-weight:600;color:var(--cream);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:1.5rem}
+
+.slider-group{margin-bottom:2rem}
+.slider-label{display:flex;justify-content:space-between;align-items:center;margin-bottom:0.75rem}
+.slider-name{font-size:0.85rem;color:var(--text)}
+.slider-value{font-family:'DM Serif Display',serif;font-size:1.1rem;color:var(--blue);font-weight:600}
+.slider{width:100%;height:4px;border-radius:2px;background:var(--border);outline:none;-webkit-appearance:none;cursor:pointer}
+.slider::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--blue);cursor:pointer;box-shadow:0 2px 8px rgba(37,99,235,0.3)}
+.slider-hints{display:flex;justify-content:space-between;font-size:0.65rem;color:var(--muted);margin-top:0.4rem}
+
+.calc-results{padding:2.5rem;background:var(--bg)}
+.result-main{background:linear-gradient(135deg,var(--blue),var(--blue-light));border-radius:10px;padding:2rem;text-align:center;margin-bottom:1.5rem;color:#fff}
+.result-label{font-size:0.75rem;text-transform:uppercase;letter-spacing:0.1em;opacity:0.85;margin-bottom:0.5rem}
+.result-value{font-family:'DM Serif Display',serif;font-size:3.5rem;line-height:1;margin-bottom:0.25rem}
+.result-sub{font-size:0.8rem;opacity:0.8}
+
+.result-breakdown{display:flex;flex-direction:column;gap:0.75rem;margin-bottom:1.5rem}
+.result-row{display:flex;justify-content:space-between;align-items:center;padding:0.75rem 1rem;background:var(--surface);border:1px solid var(--border);border-radius:6px}
+.result-row-label{font-size:0.8rem;color:var(--text);display:flex;align-items:center;gap:0.5rem}
+.result-row-value{font-size:0.9rem;font-weight:500;color:var(--green)}
+
+.roi-badge{background:rgba(5,150,105,0.1);border:1px solid rgba(5,150,105,0.2);border-radius:8px;padding:1rem;text-align:center}
+.roi-label{font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.25rem}
+.roi-value{font-family:'DM Serif Display',serif;font-size:2rem;color:var(--green)}
+.roi-desc{font-size:0.72rem;color:var(--muted);margin-top:0.25rem}
+
+.calc-cta{padding:2rem;border-top:1px solid var(--border);text-align:center;background:var(--surface)}
+.calc-cta-text{font-size:0.9rem;color:var(--muted);margin-bottom:1rem}
+.calc-cta-text strong{color:var(--cream)}
+
+/* ============ FEATURES ============ */
+.features-section{padding:7rem 2rem}
+.features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-top:3.5rem}
+.feature-card{background:var(--surface);padding:2.5rem;position:relative;overflow:hidden;transition:background 0.3s}
+.feature-card:hover{background:var(--bg2)}
+.feature-card::after{content:'';position:absolute;bottom:0;left:0;width:0;height:2px;background:linear-gradient(90deg,var(--blue),var(--blue-light));transition:width 0.4s}
+.feature-card:hover::after{width:100%}
+.f-num{font-family:'DM Serif Display',serif;font-size:3rem;color:rgba(37,99,235,0.1);line-height:1;margin-bottom:1rem;font-style:italic}
+.f-icon{font-size:1.5rem;margin-bottom:0.875rem;display:block}
+.f-title{font-size:0.95rem;font-weight:500;color:var(--cream);margin-bottom:0.5rem}
+.f-desc{font-size:0.82rem;color:var(--muted);line-height:1.7}
+
+/* ============ COMPARISON ============ */
+.comparison-section{padding:7rem 2rem;background:var(--bg2);border-top:1px solid var(--border)}
+.comparison-table{margin-top:3rem;border:1px solid var(--border);border-radius:10px;overflow:hidden;background:var(--surface)}
+.comp-header{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr;background:var(--bg2);border-bottom:1px solid var(--border)}
+.comp-th{padding:1rem 1.25rem;font-size:0.72rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);text-align:center}
+.comp-th:first-child{text-align:left}
+.comp-th.klara{color:var(--blue);font-weight:600;background:rgba(37,99,235,0.05)}
+.comp-row{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr;border-bottom:1px solid var(--border);align-items:center;transition:background 0.15s}
+.comp-row:last-child{border-bottom:none}
+.comp-row:hover{background:var(--bg)}
+.comp-td{padding:0.875rem 1.25rem;font-size:0.8rem;color:var(--text);text-align:center}
+.comp-td:first-child{text-align:left;color:var(--cream);font-weight:400}
+.comp-td.klara{background:rgba(37,99,235,0.03)}
+.check{color:var(--green);font-size:1rem}
+.cross{color:var(--red);font-size:1rem;opacity:0.5}
+.partial{color:var(--gold);font-size:0.75rem}
+
+/* ============ TESTIMONIALS ============ */
+.testi-section{padding:7rem 2rem}
+.testi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:3.5rem}
+.testi-card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:2rem;transition:all 0.3s}
+.testi-card:hover{border-color:var(--border2);box-shadow:0 8px 30px rgba(37,99,235,0.08)}
+.testi-stars{color:var(--gold);font-size:0.9rem;margin-bottom:1rem}
+.testi-text{font-size:0.88rem;color:var(--text);line-height:1.75;font-style:italic}
+.testi-author{display:flex;align-items:center;gap:0.75rem;margin-top:1.5rem}
+.testi-av{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:600;color:#fff}
+.testi-name{font-size:0.82rem;font-weight:500;color:var(--cream)}
+.testi-role{font-size:0.7rem;color:var(--muted)}
+
+/* ============ PRICING ============ */
+.pricing-section{padding:7rem 2rem;background:var(--bg2);border-top:1px solid var(--border)}
+.pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;max-width:900px;margin:3.5rem auto 0}
+.price-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:2.5rem;position:relative;transition:all 0.3s}
+.price-card:hover{box-shadow:0 8px 30px rgba(37,99,235,0.1)}
+.price-card.featured{border-color:var(--blue);box-shadow:0 8px 30px rgba(37,99,235,0.15)}
+.price-card.featured::before{content:'Le plus populaire';position:absolute;top:-1px;left:50%;transform:translateX(-50%);background:var(--blue);color:#fff;font-size:0.62rem;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;padding:0.3rem 1rem;border-radius:0 0 4px 4px;white-space:nowrap}
+.price-name{font-size:0.72rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-bottom:1rem}
+.price-amount{display:flex;align-items:flex-start;gap:0.25rem;line-height:1}
+.price-currency{font-size:1.5rem;color:var(--cream);margin-top:0.3rem}
+.price-value{font-family:'DM Serif Display',serif;font-size:3.2rem;color:var(--cream)}
+.price-period{font-size:0.78rem;color:var(--muted);align-self:flex-end;margin-bottom:0.4rem}
+.price-desc{font-size:0.78rem;color:var(--muted);margin:0.875rem 0 1.5rem}
+.price-btn{display:block;text-align:center;padding:0.75rem;border-radius:4px;font-size:0.85rem;font-weight:500;cursor:pointer;border:none;width:100%;font-family:inherit;margin-bottom:1.5rem;transition:all 0.2s}
+.price-btn-outline{background:transparent;border:1px solid var(--border2);color:var(--text)}
+.price-btn-outline:hover{border-color:var(--blue);color:var(--blue)}
+.price-btn-blue{background:var(--blue);color:#fff}
+.price-btn-blue:hover{background:var(--blue-dark)}
+.price-features{list-style:none;display:flex;flex-direction:column;gap:0.625rem}
+.price-features li{display:flex;align-items:flex-start;gap:0.5rem;font-size:0.78rem;color:var(--muted)}
+.price-features li::before{content:'✓';color:var(--blue-light);font-size:0.7rem;margin-top:0.1rem;flex-shrink:0}
+
+/* ============ WAITLIST ============ */
+.waitlist-page{padding:6rem 2rem;min-height:100vh;background:var(--bg)}
+.waitlist-inner{max-width:620px;margin:0 auto}
+.w-badge{display:inline-flex;align-items:center;gap:0.5rem;background:rgba(217,119,6,0.1);border:1px solid rgba(217,119,6,0.25);color:var(--gold);font-size:0.72rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;padding:0.45rem 1.1rem;border-radius:100px;margin-bottom:2rem}
+.w-badge-dot{width:6px;height:6px;background:var(--gold);border-radius:50%;animation:pulse 2s infinite}
+.w-title{font-family:'DM Serif Display',serif;font-size:clamp(2.5rem,5vw,3.5rem);line-height:1.08;letter-spacing:-0.04em;color:var(--cream);margin-bottom:1.25rem}
+.w-title em{background:linear-gradient(135deg,var(--blue),var(--blue-light));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-style:italic}
+.w-desc{font-size:1.05rem;color:var(--muted);line-height:1.7;margin-bottom:2.5rem}
+.spots-bar{margin-bottom:2rem}
+.spots-header{display:flex;justify-content:space-between;margin-bottom:0.5rem}
+.spots-label{font-size:0.75rem;color:var(--muted)}
+.spots-count{font-size:0.75rem;color:var(--red);font-weight:600}
+.progress-track{height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--blue),var(--blue-light));border-radius:3px;width:73%}
+.offer-card{background:var(--surface);border:2px solid var(--blue);border-radius:12px;padding:2.5rem;position:relative;overflow:hidden;box-shadow:0 8px 30px rgba(37,99,235,0.12)}
+.offer-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--blue),var(--blue-light))}
+.offer-tag{display:inline-flex;align-items:center;gap:0.4rem;background:rgba(217,119,6,0.1);border:1px solid rgba(217,119,6,0.25);color:var(--gold);font-size:0.65rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;padding:0.3rem 0.75rem;border-radius:100px;margin-bottom:1.5rem}
+.offer-title{font-family:'DM Serif Display',serif;font-size:1.5rem;color:var(--cream);margin-bottom:0.5rem}
+.offer-desc{font-size:0.85rem;color:var(--muted);margin-bottom:1.75rem;line-height:1.6}
+.price-display{display:flex;align-items:flex-end;gap:1.5rem;margin-bottom:1.5rem;flex-wrap:wrap}
+.price-old-num{font-family:'DM Serif Display',serif;font-size:2rem;color:var(--muted);text-decoration:line-through;opacity:0.4}
+.price-old-label{font-size:0.65rem;color:var(--muted);text-transform:uppercase}
+.price-new-num{font-family:'DM Serif Display',serif;font-size:3.5rem;color:var(--cream);line-height:1;display:flex;align-items:flex-start;gap:0.2rem}
+.price-currency{font-size:1.5rem;margin-top:0.5rem}
+.price-new-label{font-size:0.7rem;color:var(--green);font-weight:600;text-transform:uppercase;letter-spacing:0.08em;margin-top:0.25rem}
+.lifetime-badge{background:rgba(5,150,105,0.08);border:1px solid rgba(5,150,105,0.2);border-radius:6px;padding:0.875rem 1rem;font-size:0.8rem;color:var(--green);margin-bottom:1.5rem;display:flex;align-items:center;gap:0.5rem}
+.perks{display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;margin-bottom:2rem}
+.perk{display:flex;align-items:flex-start;gap:0.5rem;font-size:0.78rem;color:var(--text)}
+.perk::before{content:'✓';color:var(--green);font-size:0.72rem;margin-top:0.1rem;flex-shrink:0;font-weight:600}
+.form-group{display:flex;flex-direction:column;gap:0.35rem;margin-bottom:1rem}
+.form-label{font-size:0.68rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted)}
+.form-input{background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:0.75rem 1rem;font-size:0.9rem;color:var(--cream);font-family:inherit;font-weight:300;transition:border-color 0.2s;outline:none;width:100%}
+.form-input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(37,99,235,0.1)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.cta-btn{width:100%;background:var(--blue);color:#fff;border:none;border-radius:6px;padding:1rem;font-size:1rem;font-weight:500;cursor:pointer;font-family:inherit;transition:all 0.25s;display:flex;align-items:center;justify-content:center;gap:0.5rem}
+.cta-btn:hover{background:var(--blue-dark);transform:translateY(-1px);box-shadow:0 8px 30px rgba(37,99,235,0.25)}
+.cta-sub{text-align:center;font-size:0.72rem;color:var(--muted);margin-top:0.75rem;display:flex;align-items:center;justify-content:center;gap:0.5rem}
+.guarantee{display:flex;align-items:flex-start;gap:1rem;background:rgba(5,150,105,0.05);border:1px solid rgba(5,150,105,0.15);border-radius:8px;padding:1.25rem;margin-top:1.5rem}
+.guarantee-icon{font-size:1.75rem;flex-shrink:0}
+.guarantee-title{font-size:0.85rem;font-weight:500;color:var(--green);margin-bottom:0.3rem}
+.guarantee-desc{font-size:0.78rem;color:var(--muted);line-height:1.6}
+.faq{margin-top:2rem}
+.faq-title{font-size:0.72rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-bottom:1rem}
+.faq-item{border:1px solid var(--border);border-radius:8px;margin-bottom:0.5rem;overflow:hidden;background:var(--surface)}
+.faq-q{padding:1rem 1.25rem;font-size:0.85rem;color:var(--cream);cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.faq-icon{color:var(--muted);transition:transform 0.2s}
+.faq-a{padding:0 1.25rem;max-height:0;overflow:hidden;transition:all 0.3s;font-size:0.82rem;color:var(--muted);line-height:1.7}
+.faq-item.open .faq-a{padding:0 1.25rem 1rem;max-height:200px}
+.faq-item.open .faq-icon{transform:rotate(45deg)}
+
+/* ============ APP DASHBOARD ============ */
+.app-layout{display:flex;height:100vh;overflow:hidden}
+.sidebar{width:var(--sidebar-w);background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto}
+.sidebar-logo{padding:1.25rem 1.25rem 0.75rem;border-bottom:1px solid var(--border);margin-bottom:0.5rem}
+.s-logo{font-family:'DM Serif Display',serif;font-size:1.4rem;color:var(--blue-dark)}
+.s-logo em{color:var(--blue-light);font-style:italic}
+.s-sub{font-size:0.6rem;color:var(--blue);margin-top:0.1rem;letter-spacing:0.05em;text-transform:uppercase}
+.nav-section{padding:0 0.75rem;margin-bottom:0.25rem}
+.nav-label{font-size:0.6rem;text-transform:uppercase;letter-spacing:0.12em;color:var(--muted);padding:0.75rem 0.5rem 0.3rem}
+.nav-item{display:flex;align-items:center;gap:0.6rem;padding:0.5rem 0.625rem;border-radius:5px;cursor:pointer;transition:all 0.15s;color:var(--muted);font-size:0.8rem;user-select:none;position:relative}
+.nav-item:hover{background:var(--bg2);color:var(--text)}
+.nav-item.active{background:rgba(37,99,235,0.1);color:var(--blue)}
+.nav-item.active::before{content:'';position:absolute;left:0;top:20%;bottom:20%;width:2px;background:var(--blue);border-radius:2px}
+.nav-icon{width:16px;text-align:center;font-size:0.9rem}
+.nav-badge{margin-left:auto;background:var(--red);color:#fff;font-size:0.55rem;font-weight:600;padding:0.15rem 0.45rem;border-radius:100px}
+.nav-badge.gold{background:var(--gold)}
+.sidebar-footer{margin-top:auto;padding:1rem 1.25rem;border-top:1px solid var(--border)}
+.user-card{display:flex;align-items:center;gap:0.625rem}
+.user-avatar{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--blue-light));display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:600;color:#fff}
+.user-name{font-size:0.78rem;font-weight:500;color:var(--cream)}
+.user-plan{font-size:0.65rem;color:var(--blue)}
+.app-main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.topbar{height:56px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 1.5rem;gap:1rem}
+.page-title{font-family:'DM Serif Display',serif;font-size:1.1rem;color:var(--cream);flex:1}
+.topbar-actions{display:flex;align-items:center;gap:0.75rem}
+.search-bar{display:flex;align-items:center;gap:0.5rem;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:0.4rem 0.875rem;font-size:0.78rem;color:var(--muted);min-width:200px}
+.icon-btn{width:32px;height:32px;border-radius:6px;background:var(--bg);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:0.9rem;color:var(--muted)}
+.icon-btn:hover{border-color:var(--border2);color:var(--text)}
+.content{flex:1;overflow-y:auto;padding:1.5rem}
+.view{display:none}
+.view.active{display:block}
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.5rem}
+.kpi-card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:1.25rem;transition:all 0.2s}
+.kpi-card:hover{box-shadow:0 4px 16px rgba(37,99,235,0.08);border-color:var(--border2)}
+.kpi-label{font-size:0.65rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-bottom:0.625rem}
+.kpi-value{font-family:'DM Serif Display',serif;font-size:1.9rem;color:var(--cream);line-height:1}
+.kpi-change{font-size:0.7rem;margin-top:0.4rem}
+.up{color:var(--green)}.down{color:var(--red)}.warn{color:var(--gold)}
+.progress-bar{height:4px;background:var(--border);border-radius:2px;overflow:hidden;margin-top:0.5rem}
+.progress-fill-bar{height:100%;background:var(--blue);border-radius:2px}
+.grid-2{display:grid;grid-template-columns:1.6fr 1fr;gap:1rem;margin-bottom:1rem}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:1.25rem}
+.card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
+.card-title{font-size:0.8rem;font-weight:500;color:var(--cream)}
+.card-action{font-size:0.7rem;color:var(--blue);cursor:pointer}
+.table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden}
+.table-head{display:grid;padding:0.75rem 1.25rem;border-bottom:1px solid var(--border);background:var(--bg2)}
+.table-row{display:grid;padding:0.75rem 1.25rem;border-bottom:1px solid var(--border);align-items:center;transition:background 0.15s;cursor:pointer}
+.table-row:last-child{border-bottom:none}
+.table-row:hover{background:var(--bg)}
+.th{font-size:0.62rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted)}
+.td{font-size:0.78rem;color:var(--text)}
+.td.name{color:var(--cream)}
+.td.amount{font-weight:500;color:var(--cream);font-family:'DM Serif Display',serif;font-size:0.9rem}
+.badge-s{display:inline-flex;align-items:center;gap:0.3rem;padding:0.2rem 0.6rem;border-radius:100px;font-size:0.65rem;font-weight:500}
+.badge-s::before{content:'';width:5px;height:5px;border-radius:50%;flex-shrink:0}
+.badge-green{background:rgba(5,150,105,0.1);color:var(--green)}.badge-green::before{background:var(--green)}
+.badge-yellow{background:rgba(217,119,6,0.1);color:var(--gold)}.badge-yellow::before{background:var(--gold)}
+.badge-red{background:rgba(220,38,38,0.1);color:var(--red)}.badge-red::before{background:var(--red)}
+.toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
+.toolbar-left{display:flex;align-items:center;gap:0.5rem}
+.toolbar-right{display:flex;align-items:center;gap:0.5rem}
+.filter-chip{padding:0.3rem 0.75rem;border-radius:100px;border:1px solid var(--border);font-size:0.72rem;color:var(--muted);cursor:pointer;transition:all 0.15s}
+.filter-chip.active{border-color:var(--blue);color:var(--blue);background:rgba(37,99,235,0.08)}
+.btn-app{display:inline-flex;align-items:center;gap:0.4rem;padding:0.5rem 1rem;border-radius:5px;font-size:0.78rem;font-weight:500;cursor:pointer;transition:all 0.15s;border:none;font-family:inherit}
+.btn-app-gold{background:var(--blue);color:#fff}
+.btn-app-gold:hover{background:var(--blue-dark)}
+.btn-app-outline{background:transparent;border:1px solid var(--border2);color:var(--text)}
+.btn-app-outline:hover{border-color:var(--blue);color:var(--blue)}
+.client-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1rem}
+.client-card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:1.25rem;transition:all 0.2s;cursor:pointer}
+.client-card:hover{border-color:var(--border2);box-shadow:0 4px 16px rgba(37,99,235,0.08)}
+.client-avatar{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:600;color:#fff;margin-bottom:0.875rem;font-family:'DM Serif Display',serif}
+.client-name{font-size:0.88rem;font-weight:500;color:var(--cream);margin-bottom:0.2rem}
+.client-meta{font-size:0.72rem;color:var(--muted)}
+.client-stats{display:flex;gap:1rem;margin-top:0.875rem;padding-top:0.875rem;border-top:1px solid var(--border)}
+.client-stat{font-size:0.7rem;color:var(--muted)}
+.client-stat strong{display:block;font-size:0.82rem;color:var(--cream);font-weight:500}
+.metric-row{display:flex;align-items:center;gap:0.75rem;padding:0.625rem 0;border-bottom:1px solid var(--border)}
+.metric-row:last-child{border-bottom:none}
+.metric-label{flex:1;font-size:0.78rem;color:var(--muted)}
+.metric-val{font-size:0.82rem;font-weight:500;color:var(--cream)}
+.activity-item{display:flex;align-items:flex-start;gap:0.75rem;padding:0.75rem 0;border-bottom:1px solid var(--border)}
+.activity-item:last-child{border-bottom:none}
+.activity-dot{width:8px;height:8px;border-radius:50%;margin-top:0.3rem;flex-shrink:0}
+.activity-text{font-size:0.78rem;color:var(--text);line-height:1.5}
+.activity-time{font-size:0.68rem;color:var(--muted);margin-top:0.1rem}
+.relance-item{display:flex;align-items:center;gap:1rem;padding:0.875rem 0;border-bottom:1px solid var(--border)}
+.relance-item:last-child{border-bottom:none}
+.relance-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:0.9rem;flex-shrink:0;background:var(--bg2)}
+.relance-info{flex:1}
+.relance-title{font-size:0.8rem;color:var(--cream)}
+.relance-meta{font-size:0.7rem;color:var(--muted);margin-top:0.1rem}
+.toggle{width:36px;height:20px;border-radius:100px;background:var(--border);position:relative;cursor:pointer;transition:background 0.2s;flex-shrink:0}
+.toggle.on{background:var(--blue)}
+.toggle::after{content:'';position:absolute;width:14px;height:14px;border-radius:50%;background:#fff;top:3px;left:3px;transition:left 0.2s}
+.toggle.on::after{left:19px}
+.ai-section{background:rgba(37,99,235,0.05);border:1px solid rgba(37,99,235,0.15);border-radius:8px;padding:1.25rem;margin-bottom:1.5rem}
+.ai-section-title{display:flex;align-items:center;gap:0.5rem;font-size:0.85rem;font-weight:500;color:var(--blue);margin-bottom:0.5rem}
+.ai-section-desc{font-size:0.78rem;color:var(--muted);margin-bottom:1rem}
+.form-group-app{display:flex;flex-direction:column;gap:0.35rem;margin-bottom:1rem}
+.form-label-app{font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em}
+.form-input-app{background:var(--bg);border:1px solid var(--border);border-radius:5px;padding:0.625rem 0.875rem;font-size:0.82rem;color:var(--text);font-family:inherit;font-weight:300;transition:border-color 0.2s;outline:none;width:100%}
+.form-input-app:focus{border-color:var(--blue)}
+.form-select-app{background:var(--bg);border:1px solid var(--border);border-radius:5px;padding:0.625rem 0.875rem;font-size:0.82rem;color:var(--text);font-family:inherit;font-weight:300;width:100%;outline:none}
+.form-textarea-app{background:var(--bg);border:1px solid var(--border);border-radius:5px;padding:0.625rem 0.875rem;font-size:0.82rem;color:var(--text);font-family:inherit;font-weight:300;width:100%;outline:none;resize:vertical;min-height:80px}
+.form-row-app{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.ai-result{background:var(--bg);border:1px solid var(--border);border-radius:5px;padding:1rem;font-size:0.8rem;line-height:1.7;color:var(--text);min-height:120px;white-space:pre-wrap}
+.spinner{width:16px;height:16px;border:2px solid var(--border);border-top-color:var(--blue);border-radius:50%;animation:spin 0.8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.empty-state{text-align:center;padding:3rem 2rem;color:var(--muted)}
+.empty-icon{font-size:2.5rem;margin-bottom:0.75rem;opacity:0.3}
+.chart-container{height:180px;position:relative}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.4);backdrop-filter:blur(4px);z-index:200;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.2s}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal{background:var(--surface);border:1px solid var(--border2);border-radius:10px;width:560px;max-width:95vw;max-height:90vh;overflow-y:auto;transform:translateY(16px);transition:transform 0.25s;box-shadow:0 20px 60px rgba(37,99,235,0.15)}
+.modal-overlay.open .modal{transform:translateY(0)}
+.modal-header{padding:1.5rem 1.5rem 1rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.modal-title{font-family:'DM Serif Display',serif;font-size:1.2rem;color:var(--cream)}
+.modal-close{width:28px;height:28px;border-radius:5px;background:var(--bg);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--muted)}
+.modal-body{padding:1.25rem 1.5rem}
+.modal-footer{padding:1rem 1.5rem;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:0.5rem}
+.toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--surface);border:1px solid var(--border2);border-radius:8px;padding:0.875rem 1.25rem;font-size:0.8rem;color:var(--text);z-index:300;transform:translateY(100px);opacity:0;transition:all 0.3s;display:flex;align-items:center;gap:0.625rem;box-shadow:0 8px 30px rgba(37,99,235,0.12)}
+.toast.show{transform:translateY(0);opacity:1}
+
+/* LOGIN */
+.login-overlay{position:fixed;inset:0;z-index:999;background:var(--bg);display:none;align-items:center;justify-content:center;flex-direction:column}
+.login-overlay.show{display:flex}
+.login-card{background:var(--surface);border:1px solid var(--border2);border-radius:12px;padding:2.5rem;width:380px;max-width:95vw;box-shadow:0 20px 60px rgba(37,99,235,0.12);position:relative;overflow:hidden}
+.login-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--blue),var(--blue-light))}
+.login-logo{font-family:'DM Serif Display',serif;font-size:2rem;color:var(--blue-dark);text-align:center;margin-bottom:0.25rem}
+.login-logo em{color:var(--blue-light);font-style:italic}
+.login-sub{font-size:0.75rem;color:var(--muted);text-align:center;margin-bottom:2rem}
+.login-error{display:none;color:var(--red);font-size:0.75rem;text-align:center;margin-top:0.75rem}
+
+/* CTA SECTION */
+.cta-section{padding:8rem 2rem;text-align:center;position:relative;overflow:hidden;background:var(--bg2);border-top:1px solid var(--border)}
+.cta-glow{position:absolute;width:700px;height:700px;background:radial-gradient(circle,rgba(37,99,235,0.08),transparent 70%);top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none}
+.cta-note{margin-top:1.25rem;font-size:0.75rem;color:var(--muted);display:flex;align-items:center;justify-content:center;gap:0.5rem}
+
+/* FOOTER */
+footer{border-top:1px solid var(--border);padding:2.5rem 4rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;background:var(--surface)}
+.footer-logo{font-family:'DM Serif Display',serif;font-size:1.2rem;color:var(--blue-dark)}
+.footer-logo em{color:var(--blue-light);font-style:italic}
+.footer-links{display:flex;gap:2rem;list-style:none}
+.footer-links a{color:var(--muted);text-decoration:none;font-size:0.78rem;transition:color 0.2s}
+.footer-links a:hover{color:var(--cream)}
+.footer-copy{font-size:0.72rem;color:var(--muted)}
+
+/* REVEAL */
+.reveal{opacity:0;transform:translateY(24px);transition:opacity 0.7s ease,transform 0.7s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+
+@media(max-width:768px){
+  nav{padding:1rem 1.5rem}
+  .nav-links{display:none}
+  .preview-body,.features-grid,.testi-grid,.pricing-grid,.calc-body,.comparison-table,.comp-header,.comp-row{grid-template-columns:1fr !important}
+  .prev-sidebar{display:none}
+  .stat-item{padding:2rem}
+  .kpi-grid{grid-template-columns:repeat(2,1fr)}
+  footer{flex-direction:column;text-align:center}
+  .app-layout{flex-direction:column}
+  .sidebar{width:100%;height:auto}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="nav">
+  <div class="logo" onclick="showPage('landing')">Klar<em>a</em></div>
+  <ul class="nav-links">
+    <li><a onclick="showPage('landing');scrollTo('#features')">Fonctionnalités</a></li>
+    <li><a onclick="showPage('landing');scrollTo('#calc')">Calculateur</a></li>
+    <li><a onclick="showPage('landing');scrollTo('#pricing')">Tarifs</a></li>
+    <li><a onclick="window.location.href='https://buy.stripe.com/6oUeVcdCL8IAb61fAzfQI00'" class="nav-btn">⭐ Offre fondateur →</a></li>
+  </ul>
+</nav>
+
+<!-- ==================== PAGE LANDING ==================== -->
+<div class="page active" id="page-landing">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="grid-bg"></div>
+    <div class="glow"></div>
+    <div class="hero-badge"><span class="badge-dot"></span> Bêta ouverte — 100 places disponibles</div>
+    <h1>Ton activité freelance,<br><em>enfin maîtrisée</em></h1>
+    <p class="hero-desc">Devis, factures, contrats, relances, CRM — tout dans un seul outil intelligent. Arrête de jongler entre 5 apps.</p>
+    <div class="hero-cta">
+      <button class="btn-gold" onclick="window.location.href='https://buy.stripe.com/6oUeVcdCL8IAb61fAzfQI00'">⭐ Offre fondateur 19€/mois</button>
+      <button class="btn-ghost" onclick="showPage('app')">▶ Voir le dashboard</button>
+    </div>
+    <div class="social-proof">
+      <div class="avatars">
+        <div class="av" style="background:#2563eb">SL</div>
+        <div class="av" style="background:#7c3aed">MR</div>
+        <div class="av" style="background:#0891b2">JD</div>
+        <div class="av" style="background:#059669">AC</div>
+      </div>
+      <div>
+        <div style="color:var(--gold);font-size:0.8rem">★★★★★</div>
+        <div class="proof-text"><strong>+340 freelances</strong> sur liste d'attente</div>
+      </div>
+    </div>
+    <!-- MOCKUP -->
+    <div class="preview-wrap">
+      <div class="preview">
+        <div class="preview-topbar">
+          <div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div>
+          <div class="preview-url">app.klara.fr/dashboard</div>
+        </div>
+        <div class="preview-body">
+          <div class="prev-sidebar">
+            <div class="prev-logo">Klar<em>a</em></div>
+            <div class="prev-item act">▦ Dashboard</div>
+            <div class="prev-item">📄 Devis</div>
+            <div class="prev-item">💳 Factures</div>
+            <div class="prev-item">👥 Clients</div>
+            <div class="prev-item">🔔 Relances</div>
+            <div class="prev-item">✦ IA</div>
+          </div>
+          <div class="prev-main">
+            <div style="font-size:0.85rem;font-weight:500;color:var(--cream);margin-bottom:1.25rem">Bonjour Sophie 👋 — Mai 2026</div>
+            <div class="prev-kpis">
+              <div class="prev-kpi"><div class="prev-kpi-label">CA du mois</div><div class="prev-kpi-val">8 240€</div><div class="prev-kpi-change">↑ +18%</div></div>
+              <div class="prev-kpi"><div class="prev-kpi-label">En attente</div><div class="prev-kpi-val">2 150€</div><div class="prev-kpi-change" style="color:var(--gold)">3 relances</div></div>
+              <div class="prev-kpi"><div class="prev-kpi-label">Taux devis</div><div class="prev-kpi-val">78%</div><div class="prev-kpi-change">↑ +5%</div></div>
+            </div>
+            <div class="prev-table">
+              <div class="prev-th"><div>Client</div><div>Montant</div><div>Statut</div></div>
+              <div class="prev-tr"><div>Studio Bleu</div><div>1 800€</div><div><span class="tbadge bg">Payée</span></div></div>
+              <div class="prev-tr"><div>Maison Duval</div><div>650€</div><div><span class="tbadge by">En cours</span></div></div>
+              <div class="prev-tr"><div>Atelier Nord</div><div>2 400€</div><div><span class="tbadge br">En retard</span></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STATS -->
+  <div class="stats-section">
+    <div class="stat-item"><span class="stat-num" data-target="3" data-suffix="h">0h</span><div class="stat-label">économisées par semaine</div></div>
+    <div class="stat-item"><span class="stat-num" data-target="97" data-suffix="%">0%</span><div class="stat-label">des devis en moins de 5 min</div></div>
+    <div class="stat-item"><span class="stat-num" data-target="65" data-suffix="%">0%</span><div class="stat-label">de factures impayées en moins</div></div>
+    <div class="stat-item"><span class="stat-num">4.9★</span><div class="stat-label">satisfaction bêta testeurs</div></div>
+  </div>
+
+  <!-- CALCULATEUR -->
+  <section class="calc-section" id="calc">
+    <div class="section-inner">
+      <div class="section-tag reveal">💰 Calculateur</div>
+      <h2 class="reveal">Combien te coûte<br><em>l'absence de Klara ?</em></h2>
+      <p class="section-desc reveal">Déplace les curseurs selon ta situation et découvre combien tu perds chaque mois sans Klara.</p>
+
+      <div class="calc-wrap">
+        <div class="calc-header">
+          <div class="calc-header-title">🧮 Calcule tes économies avec Klara</div>
+          <div class="calc-header-desc">Résultat en temps réel basé sur tes données</div>
+        </div>
+        <div class="calc-body">
+          <!-- INPUTS -->
+          <div class="calc-inputs">
+            <div class="calc-title">Ta situation actuelle</div>
+
+            <div class="slider-group">
+              <div class="slider-label">
+                <span class="slider-name">⏱ Temps passé sur l'admin / semaine</span>
+                <span class="slider-value" id="val-temps">6h</span>
+              </div>
+              <input type="range" class="slider" id="sl-temps" min="1" max="20" value="6" oninput="updateCalc()"/>
+              <div class="slider-hints"><span>1h</span><span>20h</span></div>
+            </div>
+
+            <div class="slider-group">
+              <div class="slider-label">
+                <span class="slider-name">💶 Ton taux horaire</span>
+                <span class="slider-value" id="val-taux">80€/h</span>
+              </div>
+              <input type="range" class="slider" id="sl-taux" min="20" max="300" step="10" value="80" oninput="updateCalc()"/>
+              <div class="slider-hints"><span>20€</span><span>300€</span></div>
+            </div>
+
+            <div class="slider-group">
+              <div class="slider-label">
+                <span class="slider-name">📄 Factures impayées / mois</span>
+                <span class="slider-value" id="val-impay">2</span>
+              </div>
+              <input type="range" class="slider" id="sl-impay" min="0" max="10" value="2" oninput="updateCalc()"/>
+              <div class="slider-hints"><span>0</span><span>10</span></div>
+            </div>
+
+            <div class="slider-group">
+              <div class="slider-label">
+                <span class="slider-name">💳 Montant moyen d'une facture</span>
+                <span class="slider-value" id="val-montant">800€</span>
+              </div>
+              <input type="range" class="slider" id="sl-montant" min="100" max="5000" step="100" value="800" oninput="updateCalc()"/>
+              <div class="slider-hints"><span>100€</span><span>5 000€</span></div>
+            </div>
+
+            <div class="slider-group">
+              <div class="slider-label">
+                <span class="slider-name">📉 Devis perdus faute de suivi / mois</span>
+                <span class="slider-value" id="val-devis">2</span>
+              </div>
+              <input type="range" class="slider" id="sl-devis" min="0" max="10" value="2" oninput="updateCalc()"/>
+              <div class="slider-hints"><span>0</span><span>10</span></div>
+            </div>
+          </div>
+
+          <!-- RESULTS -->
+          <div class="calc-results">
+            <div class="calc-title">Ce que Klara te rapporte</div>
+
+            <div class="result-main">
+              <div class="result-label">Tu perds chaque mois sans Klara</div>
+              <div class="result-value" id="result-total">3 200€</div>
+              <div class="result-sub">en temps perdu + impayés + devis ratés</div>
+            </div>
+
+            <div class="result-breakdown">
+              <div class="result-row">
+                <div class="result-row-label">⏱ Temps admin récupéré</div>
+                <div class="result-row-value" id="res-temps">+1 920€</div>
+              </div>
+              <div class="result-row">
+                <div class="result-row-label">💳 Impayés récupérés (65%)</div>
+                <div class="result-row-value" id="res-impay">+1 040€</div>
+              </div>
+              <div class="result-row">
+                <div class="result-row-label">📄 Devis convertis</div>
+                <div class="result-row-value" id="res-devis">+240€</div>
+              </div>
+            </div>
+
+            <div class="roi-badge">
+              <div class="roi-label">Retour sur investissement</div>
+              <div class="roi-value" id="roi-value">110x</div>
+              <div class="roi-desc">Pour 29€/mois, Klara te rapporte <span id="roi-gain">3 200€</span>/mois</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="calc-cta">
+          <div class="calc-cta-text">Tu perds <strong id="calc-cta-val">3 200€/mois</strong> sans Klara. L'abonnement fondateur coûte <strong>19€/mois.</strong></div>
+          <button class="btn-gold" onclick="window.location.href='https://buy.stripe.com/6oUeVcdCL8IAb61fAzfQI00'">⭐ Bloquer mon accès fondateur maintenant →</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="features-section" id="features">
+    <div class="section-inner">
+      <div class="section-tag reveal">La solution</div>
+      <h2 class="reveal">Tout ce dont tu as besoin,<br><em>au même endroit</em></h2>
+      <div class="features-grid">
+        <div class="feature-card reveal"><div class="f-num">01</div><span class="f-icon">⚡</span><div class="f-title">Devis en 2 minutes</div><p class="f-desc">L'IA rédige ton devis à partir de quelques mots. Ton client signe en ligne directement.</p></div>
+        <div class="feature-card reveal"><div class="f-num">02</div><span class="f-icon">💳</span><div class="f-title">Facturation sans friction</div><p class="f-desc">Convertis un devis signé en facture en un clic. PDF aux normes, envoi automatique.</p></div>
+        <div class="feature-card reveal"><div class="f-num">03</div><span class="f-icon">🤖</span><div class="f-title">Relances automatiques</div><p class="f-desc">Klara surveille tes échéances et envoie des relances polies en ton nom.</p></div>
+        <div class="feature-card reveal"><div class="f-num">04</div><span class="f-icon">👥</span><div class="f-title">CRM minimaliste</div><p class="f-desc">Tous tes clients et leur historique en un seul endroit. Retrouve tout en 2 secondes.</p></div>
+        <div class="feature-card reveal"><div class="f-num">05</div><span class="f-icon">📊</span><div class="f-title">Tableau de bord live</div><p class="f-desc">CA du mois, taux de conversion, factures à venir. Tu pilotes avec des données claires.</p></div>
+        <div class="feature-card reveal"><div class="f-num">06</div><span class="f-icon">✍️</span><div class="f-title">Contrats & signature</div><p class="f-desc">Modèles de contrats freelance prêts à l'emploi. Signature électronique intégrée.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMPARAISON -->
+  <section class="comparison-section">
+    <div class="section-inner">
+      <div class="section-tag reveal">Comparaison</div>
+      <h2 class="reveal">Klara vs <em>les autres outils</em></h2>
+      <p class="section-desc reveal">Pourquoi payer 5 abonnements quand Klara fait tout ?</p>
+      <div class="comparison-table reveal">
+        <div class="comp-header">
+          <div class="comp-th">Fonctionnalité</div>
+          <div class="comp-th klara">✦ Klara</div>
+          <div class="comp-th">Freebe</div>
+          <div class="comp-th">Notion</div>
+          <div class="comp-th">Excel/Word</div>
+        </div>
+        <div class="comp-row">
+          <div class="comp-td">Devis & Factures</div>
+          <div class="comp-td klara"><span class="check">✓</span></div>
+          <div class="comp-td"><span class="check">✓</span></div>
+          <div class="comp-td"><span class="partial">Partiel</span></div>
+          <div class="comp-td"><span class="partial">Manuel</span></div>
+        </div>
+        <div class="comp-row">
+          <div class="comp-td">Génération IA</div>
+          <div class="comp-td klara"><span class="check">✓</span></div>
+          <div class="comp-td"><span class="cross">✗</span></div>
+          <div class="comp-td"><span class="cross">✗</span></div>
+          <div class="comp-td"><span class="cross">✗</span></div>
+        </div>
+        <div class="comp-row">
+          <div class="comp-td">Relances automatiques</div>
+          <div class="comp-td klara"><span class="check">✓</span></div>
+          <div class="comp-td"><span class="partial">Partiel</span></div>
+          <div class="comp-td"><span class="cross">✗</span></div>
+          <div class="comp-td"><span class="cross">✗</span></div>
+        </div>
+        <div class="comp-row">
+          <div class="comp-td">CRM clients</div>
+          <div class="comp-td klara"><span class="check">✓</span></div>
+          <div class="comp-td"><span class="cross">✗</span></div>
+          <div class="comp-td"><span class="check">✓</span></div>
+          <div class="comp-td"><span class="cross">✗</span></div>
+        </div>
+        <div class="comp-row">
+          <div class="comp-td">Signature électronique</div>
+          <div class="comp-td klara"><span class="check">✓</span></div>
+          <div class="comp-td"><span class="cross">✗</span></div>
+          <div class="comp-td"><span class="cross">✗</span></div>
+          <div class="comp-td"><span class="cross">✗</span></div>
+        </div>
+        <div class="comp-row">
+          <div class="comp-td">Paiement Stripe intégré</div>
+          <div class="comp-td klara"><span class="check">✓</span></div>
+          <div class="comp-td"><span class="cross">✗</span></div>
+          <div class="comp-td"><span class="cross">✗</span></div>
+          <div class="comp-td"><span class="cross">✗</span></div>
+        </div>
+        <div class="comp-row">
+          <div class="comp-td" style="font-weight:600;color:var(--cream)">Prix mensuel</div>
+          <div class="comp-td klara" style="color:var(--green);font-weight:600">19€</div>
+          <div class="comp-td" style="color:var(--red)">24€</div>
+          <div class="comp-td" style="color:var(--red)">16€</div>
+          <div class="comp-td" style="color:var(--red)">15€+</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS -->
+  <section class="testi-section" id="testimonials">
+    <div class="section-inner">
+      <div class="section-tag reveal">Témoignages</div>
+      <h2 class="reveal">Ce qu'en pensent les <em>premiers testeurs</em></h2>
+      <div class="testi-grid">
+        <div class="testi-card reveal">
+          <div class="testi-stars">★★★★★</div>
+          <p class="testi-text">"J'utilisais Notion + Word + Gmail pour gérer mes clients. Klara a tout remplacé en 3 jours. J'ai récupéré au moins 4h par semaine."</p>
+          <div class="testi-author">
+            <div class="testi-av" style="background:#2563eb">SL</div>
+            <div><div class="testi-name">Sophie L.</div><div class="testi-role">Designer UI/UX — Lyon</div></div>
+          </div>
+        </div>
+        <div class="testi-card reveal">
+          <div class="testi-stars">★★★★★</div>
+          <p class="testi-text">"Le générateur de devis IA est magique. Je décris le projet en quelques phrases et j'ai un devis pro en 90 secondes."</p>
+          <div class="testi-author">
+            <div class="testi-av" style="background:#7c3aed">MR</div>
+            <div><div class="testi-name">Marc R.</div><div class="testi-role">Développeur freelance — Paris</div></div>
+          </div>
+        </div>
+        <div class="testi-card reveal">
+          <div class="testi-stars">★★★★☆</div>
+          <p class="testi-text">"Les relances automatiques m'ont permis de récupérer 2 800€ de factures en retard. Incroyable."</p>
+          <div class="testi-author">
+            <div class="testi-av" style="background:#059669">JD</div>
+            <div><div class="testi-name">Julie D.</div><div class="testi-role">Consultante stratégie — Bordeaux</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRICING -->
+  <section class="pricing-section" id="pricing">
+    <div class="section-inner" style="text-align:center">
+      <div class="section-tag reveal" style="justify-content:center">Tarifs</div>
+      <h2 class="reveal" style="margin:0 auto">Simple, <em>sans surprise</em></h2>
+      <p class="section-desc reveal" style="margin:1rem auto 0">14 jours gratuits, aucune CB requise. Résilie quand tu veux.</p>
+    </div>
+    <div class="pricing-grid">
+      <div class="price-card reveal">
+        <div class="price-name">Solo</div>
+        <div class="price-amount"><span class="price-currency">€</span><span class="price-value">0</span><span class="price-period">/mois</span></div>
+        <p class="price-desc">Pour démarrer sans risque</p>
+        <button class="price-btn price-btn-outline" onclick="showPage('app')">Essayer gratuitement</button>
+        <ul class="price-features">
+          <li>5 devis par mois</li><li>5 factures par mois</li><li>3 clients</li><li>Dashboard basique</li>
+        </ul>
+      </div>
+      <div class="price-card featured reveal">
+        <div class="price-name">Fondateur ⭐</div>
+        <div class="price-amount"><span class="price-currency">€</span><span class="price-value">19</span><span class="price-period">/mois</span></div>
+        <p class="price-desc" style="color:var(--green)">✓ Prix bloqué à vie — au lieu de 29€</p>
+        <button class="price-btn price-btn-blue" onclick="window.location.href='https://buy.stripe.com/6oUeVcdCL8IAb61fAzfQI00'">Rejoindre les fondateurs →</button>
+        <ul class="price-features">
+          <li>Devis & factures illimités</li><li>Clients illimités</li><li>Génération IA complète</li>
+          <li>Relances automatiques</li><li>Signature électronique</li><li>Dashboard avancé</li><li>Support prioritaire</li>
+        </ul>
+      </div>
+      <div class="price-card reveal">
+        <div class="price-name">Équipe</div>
+        <div class="price-amount"><span class="price-currency">€</span><span class="price-value">79</span><span class="price-period">/mois</span></div>
+        <p class="price-desc">Pour les petites agences</p>
+        <button class="price-btn price-btn-outline">Nous contacter</button>
+        <ul class="price-features">
+          <li>Tout le plan Pro</li><li>Jusqu'à 5 utilisateurs</li><li>Exports comptables</li><li>Intégrations API</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-section">
+    <div class="cta-glow"></div>
+    <div class="section-tag reveal" style="justify-content:center">Rejoindre la bêta</div>
+    <h2 class="reveal" style="margin:0 auto;text-align:center">Prêt à reprendre le<br>contrôle de ton <em>activité ?</em></h2>
+    <p class="section-desc reveal" style="text-align:center;margin:1.25rem auto 2.5rem">27 places fondateurs restantes. Prix bloqué à vie à 19€/mois.</p>
+    <div class="reveal">
+      <button class="btn-gold" style="font-size:1rem;padding:1rem 2.5rem;margin:0 auto" onclick="window.location.href='https://buy.stripe.com/6oUeVcdCL8IAb61fAzfQI00'">⭐ Rejoindre les fondateurs →</button>
+    </div>
+    <p class="cta-note reveal">⚡ 27 places · Prix bloqué à vie · 30 jours satisfait ou remboursé</p>
+  </section>
+
+  <footer>
+    <div class="footer-logo">Klar<em>a</em></div>
+    <ul class="footer-links">
+      <li><a onclick="showPage('landing')">Accueil</a></li>
+      <li><a onclick="window.location.href='https://buy.stripe.com/6oUeVcdCL8IAb61fAzfQI00'">Offre fondateur</a></li>
+      <li><a onclick="showPage('app')">Dashboard</a></li>
+      <li><a href="#">Contact</a></li>
+    </ul>
+    <span class="footer-copy">© 2026 Klara · Fait avec ❤️ en France</span>
+  </footer>
+</div>
+
+<!-- ==================== PAGE WAITLIST ==================== -->
+<div class="page" id="page-waitlist">
+  <div class="waitlist-page">
+    <div class="waitlist-inner">
+      <button class="btn-ghost" onclick="showPage('landing')" style="margin-bottom:2rem">← Retour</button>
+      <div class="w-badge"><span class="w-badge-dot"></span> Offre fondateurs — Places limitées</div>
+      <h1 class="w-title">Rejoins les premiers<br>fondateurs de <em>Klara</em></h1>
+      <p class="w-desc">Bloque ton accès à vie au tarif fondateur avant l'ouverture officielle.</p>
+
+      <div class="spots-bar">
+        <div class="spots-header">
+          <span class="spots-label">Places fondateurs disponibles</span>
+          <span class="spots-count" id="spotsLeft">⚡ 27 places restantes sur 100</span>
+        </div>
+        <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+      </div>
+
+      <div class="offer-card">
+        <div class="offer-tag">⭐ Offre fondateur exclusive</div>
+        <div class="offer-title">Accès Pro à vie — tarif bloqué</div>
+        <p class="offer-desc">Tu paies 19€/mois au lieu de 29€/mois. Pour toujours.</p>
+        <div class="price-display">
+          <div><div class="price-old-num">29€</div><div class="price-old-label">Prix normal</div></div>
+          <div style="font-size:1.5rem;color:var(--green);margin-bottom:0.5rem">→</div>
+          <div><div class="price-new-num"><span class="price-currency">€</span>19</div><div class="price-new-label">✓ Bloqué à vie</div></div>
+        </div>
+        <div class="lifetime-badge">🔒 Ce tarif est garanti à vie — même si Klara monte à 49€/mois</div>
+        <div class="perks">
+          <div class="perk">Devis & factures illimités</div>
+          <div class="perk">Génération IA complète</div>
+          <div class="perk">Clients illimités</div>
+          <div class="perk">Relances automatiques</div>
+          <div class="perk">Signature électronique</div>
+          <div class="perk">Dashboard avancé</div>
+          <div class="perk">Support prioritaire</div>
+          <div class="perk">Badge "Fondateur" exclusif</div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><div class="form-label">Prénom *</div><input class="form-input" id="w-firstName" placeholder="Sophie"/></div>
+          <div class="form-group"><div class="form-label">Nom *</div><input class="form-input" id="w-lastName" placeholder="Laurent"/></div>
+        </div>
+        <div class="form-group"><div class="form-label">Email professionnel *</div><input class="form-input" id="w-email" type="email" placeholder="sophie@studio-sl.fr"/></div>
+        <div class="form-group"><div class="form-label">Ton métier freelance</div><input class="form-input" id="w-metier" placeholder="Ex : Designer, Développeur, Consultant..."/></div>
+        <button class="cta-btn" onclick="handleSignup()">🚀 Rejoindre les fondateurs — 19€/mois</button>
+        <div class="cta-sub">🔒 Sécurisé · Annulation à tout moment · 14 jours gratuits</div>
+      </div>
+
+      <div class="guarantee">
+        <span class="guarantee-icon">🛡️</span>
+        <div>
+          <div class="guarantee-title">Satisfait ou remboursé 30 jours</div>
+          <div class="guarantee-desc">Si Klara ne t'apporte pas au moins 3h de temps gagné par semaine dans les 30 premiers jours, on te rembourse intégralement.</div>
+        </div>
+      </div>
+
+      <div class="faq">
+        <div class="faq-title">Questions fréquentes</div>
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)"><span>Le tarif est vraiment bloqué à vie ?</span><span class="faq-icon">+</span></div>
+          <div class="faq-a">Oui, garanti contractuellement. Ton tarif de 19€/mois ne changera jamais.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)"><span>Quand j'aurai accès à Klara ?</span><span class="faq-icon">+</span></div>
+          <div class="faq-a">Tu as accès immédiatement à la version bêta. Chaque nouvelle fonctionnalité est déployée automatiquement.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)"><span>Et si je veux annuler ?</span><span class="faq-icon">+</span></div>
+          <div class="faq-a">Tu peux annuler à tout moment depuis ton espace client. Avec la garantie 30 jours, on te rembourse si tu n'es pas satisfait.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== PAGE APP ==================== -->
+<div class="page" id="page-app">
+
+  <!-- LOGIN -->
+  <div class="login-overlay" id="loginPage">
+    <div class="login-card">
+      <div class="login-logo">Klar<em>a</em></div>
+      <div class="login-sub">Connecte-toi à ton espace</div>
+      <div class="form-group"><div class="form-label">Email</div><input class="form-input" id="loginEmail" type="email" value="sophie@klara.fr"/></div>
+      <div class="form-group">
+        <div class="form-label">Mot de passe</div>
+        <div style="position:relative">
+          <input class="form-input" id="loginPassword" type="password" value="password123" style="padding-right:2.5rem"/>
+          <span onclick="togglePass()" style="position:absolute;right:0.75rem;top:50%;transform:translateY(-50%);cursor:pointer;color:var(--muted)">👁</span>
+        </div>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:1.25rem">
+        <label style="display:flex;align-items:center;gap:0.5rem;font-size:0.75rem;color:var(--muted);cursor:pointer"><input type="checkbox" checked style="accent-color:var(--blue)"/> Se souvenir</label>
+        <span style="font-size:0.75rem;color:var(--blue);cursor:pointer">Mot de passe oublié ?</span>
+      </div>
+      <button class="btn-primary" style="width:100%;justify-content:center;padding:0.75rem" onclick="doLogin()">Se connecter →</button>
+      <div class="login-error" id="loginError">❌ Email ou mot de passe incorrect</div>
+      <div style="text-align:center;margin-top:1rem;font-size:0.75rem;color:var(--muted)">Pas de compte ? <span style="color:var(--blue);cursor:pointer" onclick="window.location.href='https://buy.stripe.com/6oUeVcdCL8IAb61fAzfQI00'">Rejoindre les fondateurs</span></div>
+    </div>
+    <div style="margin-top:1.5rem;font-size:0.7rem;color:var(--muted)">🔒 Connexion sécurisée · Données hébergées en France</div>
+  </div>
+
+  <!-- APP LAYOUT -->
+  <div class="app-layout">
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <div class="s-logo">Klar<em>a</em></div>
+        <div class="s-sub">✦ Espace Pro</div>
+      </div>
+      <div class="nav-section">
+        <div class="nav-label">Principal</div>
+        <div class="nav-item active" data-view="dashboard"><span class="nav-icon">▦</span>Dashboard</div>
+        <div class="nav-item" data-view="devis"><span class="nav-icon">📄</span>Devis<span class="nav-badge gold">3</span></div>
+        <div class="nav-item" data-view="factures"><span class="nav-icon">💳</span>Factures<span class="nav-badge">2</span></div>
+        <div class="nav-item" data-view="clients"><span class="nav-icon">👥</span>Clients</div>
+        <div class="nav-item" data-view="contrats"><span class="nav-icon">✍️</span>Contrats</div>
+      </div>
+      <div class="nav-section">
+        <div class="nav-label">Automatisation</div>
+        <div class="nav-item" data-view="relances"><span class="nav-icon">🔔</span>Relances auto</div>
+        <div class="nav-item" data-view="ia"><span class="nav-icon">✦</span>Rédaction IA</div>
+        <div class="nav-item" data-view="comptable"><span class="nav-icon">📊</span>Comptabilité</div>
+      </div>
+      <div class="nav-section">
+        <div class="nav-label">Équipe & Compte</div>
+        <div class="nav-item" data-view="equipe"><span class="nav-icon">🏢</span>Mon équipe</div>
+        <div class="nav-item" data-view="settings"><span class="nav-icon">⚙</span>Paramètres</div>
+      </div>
+      <div class="sidebar-footer">
+        <div class="user-card" onclick="toggleUserMenu()" style="cursor:pointer;position:relative">
+          <div class="user-avatar">SL</div>
+          <div style="flex:1"><div class="user-name">Sophie Laurent</div><div class="user-plan">✦ Plan Fondateur</div></div>
+          <div style="color:var(--muted);font-size:0.75rem">⋮</div>
+        </div>
+        <div id="userMenu" style="display:none;position:absolute;bottom:70px;left:10px;right:10px;background:var(--surface);border:1px solid var(--border2);border-radius:8px;box-shadow:0 8px 30px rgba(37,99,235,0.15);z-index:50;overflow:hidden">
+          <div onclick="switchView('settings');toggleUserMenu()" style="display:flex;align-items:center;gap:0.75rem;padding:0.875rem 1rem;cursor:pointer;font-size:0.8rem;color:var(--text);transition:background 0.15s" onmouseover="this.style.background='var(--bg2)'" onmouseout="this.style.background='transparent'">
+            <span>👤</span> Mon profil
+          </div>
+          <div onclick="switchView('settings');toggleUserMenu()" style="display:flex;align-items:center;gap:0.75rem;padding:0.875rem 1rem;cursor:pointer;font-size:0.8rem;color:var(--text);border-top:1px solid var(--border);transition:background 0.15s" onmouseover="this.style.background='var(--bg2)'" onmouseout="this.style.background='transparent'">
+            <span>⚙️</span> Paramètres
+          </div>
+          <div onclick="switchView('comptable');toggleUserMenu()" style="display:flex;align-items:center;gap:0.75rem;padding:0.875rem 1rem;cursor:pointer;font-size:0.8rem;color:var(--text);border-top:1px solid var(--border);transition:background 0.15s" onmouseover="this.style.background='var(--bg2)'" onmouseout="this.style.background='transparent'">
+            <span>📊</span> Export comptable
+          </div>
+          <div onclick="doLogout()" style="display:flex;align-items:center;gap:0.75rem;padding:0.875rem 1rem;cursor:pointer;font-size:0.8rem;color:var(--red);border-top:1px solid var(--border);transition:background 0.15s" onmouseover="this.style.background='rgba(220,38,38,0.05)'" onmouseout="this.style.background='transparent'">
+            <span>🚪</span> Se déconnecter
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <div class="app-main">
+      <div class="topbar">
+        <div class="page-title" id="pageTitle">Dashboard</div>
+        <div class="topbar-actions">
+          <div class="search-bar">🔍 &nbsp;Rechercher...</div>
+          <div class="icon-btn" onclick="showPage('landing')" title="Retour accueil">🏠</div>
+          <div class="icon-btn" title="Notifications">🔔</div>
+        </div>
+      </div>
+
+      <div class="content">
+
+        <!-- DASHBOARD -->
+        <div class="view active" id="view-dashboard">
+
+          <!-- OBJECTIF MENSUEL -->
+          <div style="background:linear-gradient(135deg,var(--blue),var(--blue-light));border-radius:10px;padding:1.5rem;margin-bottom:1rem;color:#fff;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem">
+            <div>
+              <div style="font-size:0.72rem;text-transform:uppercase;letter-spacing:0.1em;opacity:0.8;margin-bottom:0.25rem">🎯 Objectif mensuel</div>
+              <div style="font-family:'DM Serif Display',serif;font-size:2rem;line-height:1">8 240 € <span style="font-size:1rem;opacity:0.8">/ 10 000 €</span></div>
+              <div style="font-size:0.78rem;opacity:0.85;margin-top:0.35rem">82% atteint — encore 1 760 € pour dépasser l'objectif 💪</div>
+            </div>
+            <div style="text-align:right">
+              <div style="font-size:0.72rem;opacity:0.8;margin-bottom:0.5rem">Progression</div>
+              <div style="width:160px;height:8px;background:rgba(255,255,255,0.2);border-radius:4px;overflow:hidden">
+                <div style="width:82%;height:100%;background:#fff;border-radius:4px"></div>
+              </div>
+              <div style="font-size:0.72rem;opacity:0.8;margin-top:0.35rem">↑ +18% vs mois dernier</div>
+            </div>
+          </div>
+
+          <!-- KPIs -->
+          <div class="kpi-grid" style="grid-template-columns:repeat(4,1fr)">
+            <div class="kpi-card"><div class="kpi-label">💰 CA du mois</div><div class="kpi-value">8 240 €</div><div class="kpi-change up">↑ +18% vs mai</div><div class="progress-bar"><div class="progress-fill-bar" style="width:82%"></div></div></div>
+            <div class="kpi-card"><div class="kpi-label">⏳ En attente</div><div class="kpi-value">2 150 €</div><div class="kpi-change warn">⚠ 3 à relancer</div><div class="progress-bar"><div class="progress-fill-bar" style="width:26%;background:var(--gold)"></div></div></div>
+            <div class="kpi-card"><div class="kpi-label">📈 Taux conversion</div><div class="kpi-value">78%</div><div class="kpi-change up">↑ +5% ce mois</div><div class="progress-bar"><div class="progress-fill-bar" style="width:78%;background:var(--green)"></div></div></div>
+            <div class="kpi-card"><div class="kpi-label">📅 Prévision juin</div><div class="kpi-value">9 800 €</div><div class="kpi-change up">↑ +19% estimé</div><div class="progress-bar"><div class="progress-fill-bar" style="width:65%;background:var(--blue-light)"></div></div></div>
+          </div>
+
+          <!-- GRAPHIQUES PRINCIPAUX -->
+          <div class="grid-2" style="margin-bottom:1rem">
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title">📊 CA réel vs Objectif</div>
+                <div style="display:flex;gap:0.75rem;font-size:0.68rem">
+                  <span style="display:flex;align-items:center;gap:0.3rem;color:var(--blue)"><span style="width:8px;height:8px;background:var(--blue);border-radius:50%;display:inline-block"></span>CA réel</span>
+                  <span style="display:flex;align-items:center;gap:0.3rem;color:var(--muted)"><span style="width:8px;height:8px;border:2px dashed var(--muted);border-radius:50%;display:inline-block"></span>Objectif</span>
+                </div>
+              </div>
+              <div class="chart-container"><canvas id="caChart"></canvas></div>
+            </div>
+            <div class="card">
+              <div class="card-header"><div class="card-title">🔮 Prévisions 3 mois</div></div>
+              <div class="chart-container"><canvas id="prevChart"></canvas></div>
+            </div>
+          </div>
+
+          <!-- ANALYSE CLIENTS + ALERTES -->
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;margin-bottom:1rem">
+
+            <!-- TOP CLIENTS -->
+            <div class="card">
+              <div class="card-header"><div class="card-title">🏆 Top clients</div><div class="card-action" onclick="switchView('clients')">Voir tout →</div></div>
+              <div class="metric-row"><div class="metric-label"><span style="color:var(--gold)">①</span> Pixel Craft</div><div class="metric-val" style="color:var(--green)">9 600 €</div></div>
+              <div class="metric-row"><div class="metric-label"><span style="color:var(--muted)">②</span> Studio Bleu</div><div class="metric-val">6 200 €</div></div>
+              <div class="metric-row"><div class="metric-label"><span style="color:var(--muted)">③</span> Atelier Nord</div><div class="metric-val">4 200 €</div></div>
+              <div class="metric-row"><div class="metric-label"><span style="color:var(--muted)">④</span> Volta Design</div><div class="metric-val">2 100 €</div></div>
+            </div>
+
+            <!-- RÉPARTITION CA -->
+            <div class="card">
+              <div class="card-header"><div class="card-title">🥧 CA par client</div></div>
+              <div class="chart-container" style="height:160px"><canvas id="donutChart"></canvas></div>
+            </div>
+
+            <!-- ALERTES FINANCIÈRES -->
+            <div class="card">
+              <div class="card-header"><div class="card-title">🚨 Alertes financières</div></div>
+              <div style="display:flex;flex-direction:column;gap:0.625rem">
+                <div style="background:rgba(220,38,38,0.08);border:1px solid rgba(220,38,38,0.2);border-radius:6px;padding:0.75rem">
+                  <div style="font-size:0.72rem;font-weight:500;color:var(--red)">🔴 Impayé critique</div>
+                  <div style="font-size:0.78rem;color:var(--text);margin-top:0.2rem">Atelier Nord — 2 400€ (+15j)</div>
+                </div>
+                <div style="background:rgba(217,119,6,0.08);border:1px solid rgba(217,119,6,0.2);border-radius:6px;padding:0.75rem">
+                  <div style="font-size:0.72rem;font-weight:500;color:var(--gold)">🟡 Échéance proche</div>
+                  <div style="font-size:0.78rem;color:var(--text);margin-top:0.2rem">Maison Duval — 650€ (J-3)</div>
+                </div>
+                <div style="background:rgba(5,150,105,0.08);border:1px solid rgba(5,150,105,0.2);border-radius:6px;padding:0.75rem">
+                  <div style="font-size:0.72rem;font-weight:500;color:var(--green)">🟢 Objectif en vue</div>
+                  <div style="font-size:0.78rem;color:var(--text);margin-top:0.2rem">1 760€ restants pour 10 000€</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- STATS FINANCIÈRES DÉTAILLÉES -->
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1rem">
+            <div class="card" style="text-align:center">
+              <div style="font-size:1.75rem;margin-bottom:0.5rem">💳</div>
+              <div style="font-family:'DM Serif Display',serif;font-size:1.4rem;color:var(--green)">98 200 €</div>
+              <div style="font-size:0.72rem;color:var(--muted);margin-top:0.25rem">CA total annuel</div>
+            </div>
+            <div class="card" style="text-align:center">
+              <div style="font-size:1.75rem;margin-bottom:0.5rem">📄</div>
+              <div style="font-family:'DM Serif Display',serif;font-size:1.4rem;color:var(--blue)">47</div>
+              <div style="font-size:0.72rem;color:var(--muted);margin-top:0.25rem">Factures émises</div>
+            </div>
+            <div class="card" style="text-align:center">
+              <div style="font-size:1.75rem;margin-bottom:0.5rem">⚡</div>
+              <div style="font-family:'DM Serif Display',serif;font-size:1.4rem;color:var(--gold)">12 j</div>
+              <div style="font-size:0.72rem;color:var(--muted);margin-top:0.25rem">Délai moyen paiement</div>
+            </div>
+            <div class="card" style="text-align:center">
+              <div style="font-size:1.75rem;margin-bottom:0.5rem">🎯</div>
+              <div style="font-family:'DM Serif Display',serif;font-size:1.4rem;color:var(--green)">96%</div>
+              <div style="font-size:0.72rem;color:var(--muted);margin-top:0.25rem">Taux recouvrement</div>
+            </div>
+          </div>
+
+          <!-- ACTIVITÉ + OBJECTIFS -->
+          <div class="grid-2">
+            <div class="card">
+              <div class="card-header"><div class="card-title">🕐 Activité récente</div></div>
+              <div class="activity-item"><div class="activity-dot" style="background:var(--green)"></div><div><div class="activity-text">Facture <strong>#047</strong> payée par Studio Bleu</div><div class="activity-time">Il y a 2 heures</div></div></div>
+              <div class="activity-item"><div class="activity-dot" style="background:var(--blue)"></div><div><div class="activity-text">Devis <strong>#089</strong> envoyé à Maison Duval</div><div class="activity-time">Il y a 5 heures</div></div></div>
+              <div class="activity-item"><div class="activity-dot" style="background:var(--gold)"></div><div><div class="activity-text">Relance envoyée à <strong>Atelier Nord</strong></div><div class="activity-time">Hier, 09:00</div></div></div>
+              <div class="activity-item"><div class="activity-dot" style="background:var(--green)"></div><div><div class="activity-text">Contrat signé par <strong>Forge & Co.</strong></div><div class="activity-time">Il y a 2 jours</div></div></div>
+            </div>
+            <div class="card">
+              <div class="card-header"><div class="card-title">🎯 Objectifs du mois</div></div>
+              <div style="display:flex;flex-direction:column;gap:1rem">
+                <div>
+                  <div style="display:flex;justify-content:space-between;font-size:0.78rem;margin-bottom:0.4rem"><span style="color:var(--text)">CA mensuel</span><span style="color:var(--green)">8 240 € / 10 000 €</span></div>
+                  <div class="progress-bar" style="height:6px"><div class="progress-fill-bar" style="width:82%"></div></div>
+                </div>
+                <div>
+                  <div style="display:flex;justify-content:space-between;font-size:0.78rem;margin-bottom:0.4rem"><span style="color:var(--text)">Nouveaux clients</span><span style="color:var(--blue)">2 / 3</span></div>
+                  <div class="progress-bar" style="height:6px"><div class="progress-fill-bar" style="width:67%;background:var(--blue)"></div></div>
+                </div>
+                <div>
+                  <div style="display:flex;justify-content:space-between;font-size:0.78rem;margin-bottom:0.4rem"><span style="color:var(--text)">Devis convertis</span><span style="color:var(--gold)">7 / 9</span></div>
+                  <div class="progress-bar" style="height:6px"><div class="progress-fill-bar" style="width:78%;background:var(--gold)"></div></div>
+                </div>
+                <div>
+                  <div style="display:flex;justify-content:space-between;font-size:0.78rem;margin-bottom:0.4rem"><span style="color:var(--text)">Impayés récupérés</span><span style="color:var(--green)">4 820 € / 5 000 €</span></div>
+                  <div class="progress-bar" style="height:6px"><div class="progress-fill-bar" style="width:96%;background:var(--green)"></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- DEVIS -->
+        <div class="view" id="view-devis">
+          <div class="toolbar">
+            <div class="toolbar-left">
+              <div class="filter-chip active" onclick="filterDevis('all',this)">Tous (9)</div>
+              <div class="filter-chip" onclick="filterDevis('en_attente',this)">En attente (4)</div>
+              <div class="filter-chip" onclick="filterDevis('signe',this)">Signés (3)</div>
+              <div class="filter-chip" onclick="filterDevis('expire',this)">Expirés (2)</div>
+            </div>
+            <div class="toolbar-right">
+              <button class="btn-app btn-app-outline" onclick="openModal('modal-ai-devis')">✦ Générer avec IA</button>
+              <button class="btn-app btn-app-gold" onclick="openModal('modal-new-devis')">+ Nouveau devis</button>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <div class="table-head" style="grid-template-columns:0.4fr 1.4fr 1fr 0.8fr 0.8fr 0.7fr"><div class="th">#</div><div class="th">Client</div><div class="th">Objet</div><div class="th">Montant</div><div class="th">Expiration</div><div class="th">Statut</div></div>
+            <div id="devisTable"></div>
+          </div>
+        </div>
+
+        <!-- FACTURES -->
+        <div class="view" id="view-factures">
+          <div class="toolbar">
+            <div class="toolbar-left">
+              <div class="filter-chip active">Toutes (12)</div>
+              <div class="filter-chip">Payées (8)</div>
+              <div class="filter-chip">En cours (3)</div>
+              <div class="filter-chip">En retard (1)</div>
+            </div>
+            <div class="toolbar-right">
+              <button class="btn-app btn-app-outline" onclick="openModal('modal-stripe')">💳 Demander paiement</button>
+              <button class="btn-app btn-app-gold" onclick="openModal('modal-new-facture')">+ Nouvelle facture</button>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <div class="table-head" style="grid-template-columns:0.5fr 1.4fr 0.8fr 0.8fr 0.8fr 0.7fr"><div class="th">#</div><div class="th">Client</div><div class="th">Montant HT</div><div class="th">TTC</div><div class="th">Échéance</div><div class="th">Statut</div></div>
+            <div id="facturesTable"></div>
+          </div>
+        </div>
+
+        <!-- CLIENTS -->
+        <div class="view" id="view-clients">
+          <div class="toolbar">
+            <div class="toolbar-left"><div class="filter-chip active">Tous (14)</div><div class="filter-chip">Actifs (10)</div></div>
+            <div class="toolbar-right"><button class="btn-app btn-app-gold" onclick="openModal('modal-new-client')">+ Nouveau client</button></div>
+          </div>
+          <div class="client-grid" id="clientGrid"></div>
+        </div>
+
+        <!-- RELANCES -->
+        <div class="view" id="view-relances">
+          <div class="ai-section"><div class="ai-section-title">🤖 Relances intelligentes activées</div><div class="ai-section-desc">Klara surveille tes échéances et envoie des relances automatiques en ton nom.</div></div>
+          <div style="display:grid;grid-template-columns:1.2fr 1fr;gap:1rem">
+            <div class="card"><div class="card-header"><div class="card-title">Règles d'automatisation</div></div><div id="relanceRules"></div></div>
+            <div class="card">
+              <div class="card-header"><div class="card-title">Relances planifiées</div></div>
+              <div class="metric-row"><div class="metric-label">🔴 Atelier Nord (+15j)</div><div><span class="badge-s badge-red">Urgent</span></div></div>
+              <div class="metric-row"><div class="metric-label">🟡 Maison Duval (J-3)</div><div><span class="badge-s badge-yellow">J-3</span></div></div>
+              <div class="metric-row"><div class="metric-label">✅ Studio Bleu — payée</div><div><span class="badge-s badge-green">Réglée</span></div></div>
+              <div style="margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border)">
+                <div class="metric-row"><div class="metric-label">Relances envoyées</div><div class="metric-val">7</div></div>
+                <div class="metric-row"><div class="metric-label">Montant récupéré</div><div class="metric-val" style="color:var(--green)">+4 820 €</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- IA -->
+        <div class="view" id="view-ia">
+          <div class="ai-section"><div class="ai-section-title">✦ Rédaction IA — Propulsé par Claude</div><div class="ai-section-desc">Décris ton projet en quelques mots, Klara génère un devis professionnel complet.</div></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+            <div class="card">
+              <div class="card-header"><div class="card-title">Décrire le projet</div></div>
+              <div class="form-group-app"><div class="form-label-app">Client</div><input class="form-input-app" id="ia-client" placeholder="Studio Bleu"/></div>
+              <div class="form-group-app"><div class="form-label-app">Type de prestation</div><select class="form-select-app" id="ia-type"><option>Design UI/UX</option><option>Développement web</option><option>Consultant stratégie</option><option>Rédaction</option><option>Marketing</option></select></div>
+              <div class="form-group-app"><div class="form-label-app">Décris le projet</div><textarea class="form-textarea-app" id="ia-desc" rows="4" placeholder="Ex : Refonte site e-commerce, 5 pages, 3 semaines..."></textarea></div>
+              <div class="form-row-app">
+                <div class="form-group-app"><div class="form-label-app">Budget (€)</div><input class="form-input-app" id="ia-budget" type="number" placeholder="2500"/></div>
+                <div class="form-group-app"><div class="form-label-app">Délai paiement</div><select class="form-select-app" id="ia-delai"><option>30 jours</option><option>15 jours</option><option>À la livraison</option></select></div>
+              </div>
+              <button class="btn-app btn-app-gold" style="width:100%;justify-content:center;padding:0.75rem" onclick="generateDevisIA()">✦ Générer le devis avec l'IA</button>
+            </div>
+            <div class="card">
+              <div class="card-header"><div class="card-title">Résultat généré</div><div id="ia-copy-btn" class="card-action" style="display:none" onclick="copyDevis()">📋 Copier</div></div>
+              <div id="ia-output"><div class="empty-state"><div class="empty-icon">✦</div><div>Remplis le formulaire et génère ton devis professionnel.</div></div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- EXPORT COMPTABLE -->
+        <div class="view" id="view-comptable">
+
+          <!-- HEADER -->
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem">
+            <div>
+              <div style="font-size:0.72rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--blue);margin-bottom:0.25rem">📊 Comptabilité</div>
+              <div style="font-family:'DM Serif Display',serif;font-size:1.4rem;color:var(--cream)">Export comptable <em style="font-style:normal;font-size:0.9rem;color:var(--muted)">— Prêt pour votre expert-comptable</em></div>
+            </div>
+            <button class="btn-app btn-app-gold" onclick="showToast('📊 Export généré et téléchargé !')">📥 Tout exporter</button>
+          </div>
+
+          <!-- INFO BANNER -->
+          <div style="background:rgba(37,99,235,0.05);border:1px solid rgba(37,99,235,0.15);border-radius:8px;padding:1rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:1rem">
+            <span style="font-size:2rem;flex-shrink:0">🤝</span>
+            <div>
+              <div style="font-size:0.85rem;font-weight:500;color:var(--blue);margin-bottom:0.25rem">Compatible avec tous les logiciels comptables français</div>
+              <div style="font-size:0.78rem;color:var(--muted)">Klara exporte dans les formats reconnus par Sage, QuickBooks, EBP, Cegid et tous les experts-comptables. Format FEC officiel inclus.</div>
+            </div>
+          </div>
+
+          <!-- STATS COMPTABLES -->
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.5rem">
+            <div class="card" style="text-align:center">
+              <div style="font-size:1.75rem;margin-bottom:0.5rem">💰</div>
+              <div style="font-family:'DM Serif Display',serif;font-size:1.6rem;color:var(--green)">98 240 €</div>
+              <div style="font-size:0.72rem;color:var(--muted)">CA annuel 2026</div>
+            </div>
+            <div class="card" style="text-align:center">
+              <div style="font-size:1.75rem;margin-bottom:0.5rem">🧾</div>
+              <div style="font-family:'DM Serif Display',serif;font-size:1.6rem;color:var(--blue)">16 448 €</div>
+              <div style="font-size:0.72rem;color:var(--muted)">TVA collectée</div>
+            </div>
+            <div class="card" style="text-align:center">
+              <div style="font-size:1.75rem;margin-bottom:0.5rem">📄</div>
+              <div style="font-family:'DM Serif Display',serif;font-size:1.6rem;color:var(--cream)">47</div>
+              <div style="font-size:0.72rem;color:var(--muted)">Factures émises</div>
+            </div>
+            <div class="card" style="text-align:center">
+              <div style="font-size:1.75rem;margin-bottom:0.5rem">✅</div>
+              <div style="font-family:'DM Serif Display',serif;font-size:1.6rem;color:var(--green)">96%</div>
+              <div style="font-size:0.72rem;color:var(--muted)">Taux recouvrement</div>
+            </div>
+          </div>
+
+          <div style="display:grid;grid-template-columns:1.5fr 1fr;gap:1rem">
+
+            <!-- EXPORTS DISPONIBLES -->
+            <div class="card">
+              <div class="card-header"><div class="card-title">📥 Exports disponibles</div></div>
+
+              <!-- EXPORT 1 -->
+              <div style="display:flex;align-items:center;gap:1rem;padding:1.25rem;background:var(--bg);border:1px solid var(--border);border-radius:8px;margin-bottom:0.75rem;transition:all 0.2s" onmouseover="this.style.borderColor='var(--blue)'" onmouseout="this.style.borderColor='var(--border)'">
+                <div style="width:44px;height:44px;background:rgba(5,150,105,0.1);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.25rem;flex-shrink:0">📊</div>
+                <div style="flex:1">
+                  <div style="font-size:0.85rem;font-weight:500;color:var(--cream)">Export Excel — Toutes les factures</div>
+                  <div style="font-size:0.72rem;color:var(--muted)">Toutes les factures avec montants HT, TVA, TTC, statut</div>
+                </div>
+                <button class="btn-app btn-app-outline" style="font-size:0.7rem;padding:0.4rem 0.75rem" onclick="showToast('📊 Export Excel téléchargé !')">📥 Excel</button>
+              </div>
+
+              <!-- EXPORT 2 -->
+              <div style="display:flex;align-items:center;gap:1rem;padding:1.25rem;background:var(--bg);border:1px solid var(--border);border-radius:8px;margin-bottom:0.75rem;transition:all 0.2s" onmouseover="this.style.borderColor='var(--blue)'" onmouseout="this.style.borderColor='var(--border)'">
+                <div style="width:44px;height:44px;background:rgba(37,99,235,0.1);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.25rem;flex-shrink:0">📄</div>
+                <div style="flex:1">
+                  <div style="font-size:0.85rem;font-weight:500;color:var(--cream)">Rapport PDF — Bilan mensuel</div>
+                  <div style="font-size:0.72rem;color:var(--muted)">Synthèse financière du mois prête à envoyer au comptable</div>
+                </div>
+                <button class="btn-app btn-app-outline" style="font-size:0.7rem;padding:0.4rem 0.75rem" onclick="showToast('📄 Rapport PDF généré !')">📥 PDF</button>
+              </div>
+
+              <!-- EXPORT 3 -->
+              <div style="display:flex;align-items:center;gap:1rem;padding:1.25rem;background:var(--bg);border:1px solid var(--border);border-radius:8px;margin-bottom:0.75rem;transition:all 0.2s" onmouseover="this.style.borderColor='var(--blue)'" onmouseout="this.style.borderColor='var(--border)'">
+                <div style="width:44px;height:44px;background:rgba(217,119,6,0.1);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.25rem;flex-shrink:0">🔢</div>
+                <div style="flex:1">
+                  <div style="font-size:0.85rem;font-weight:500;color:var(--cream)">Format FEC — Expert-comptable</div>
+                  <div style="font-size:0.72rem;color:var(--muted)">Fichier des Écritures Comptables — format officiel français</div>
+                </div>
+                <button class="btn-app btn-app-outline" style="font-size:0.7rem;padding:0.4rem 0.75rem" onclick="showToast('🔢 Export FEC téléchargé !')">📥 FEC</button>
+              </div>
+
+              <!-- EXPORT 4 -->
+              <div style="display:flex;align-items:center;gap:1rem;padding:1.25rem;background:var(--bg);border:1px solid var(--border);border-radius:8px;transition:all 0.2s" onmouseover="this.style.borderColor='var(--blue)'" onmouseout="this.style.borderColor='var(--border)'">
+                <div style="width:44px;height:44px;background:rgba(220,38,38,0.1);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.25rem;flex-shrink:0">🧾</div>
+                <div style="flex:1">
+                  <div style="font-size:0.85rem;font-weight:500;color:var(--cream)">Déclaration TVA</div>
+                  <div style="font-size:0.72rem;color:var(--muted)">TVA collectée et déductible calculées automatiquement</div>
+                </div>
+                <button class="btn-app btn-app-outline" style="font-size:0.7rem;padding:0.4rem 0.75rem" onclick="showToast('🧾 Déclaration TVA exportée !')">📥 TVA</button>
+              </div>
+            </div>
+
+            <!-- PANNEAU DROIT -->
+            <div style="display:flex;flex-direction:column;gap:1rem">
+
+              <!-- SÉLECTEUR PÉRIODE -->
+              <div class="card">
+                <div class="card-header"><div class="card-title">📅 Période d'export</div></div>
+                <div class="form-group-app">
+                  <div class="form-label-app">Période</div>
+                  <select class="form-select-app" onchange="updateComptable(this.value)">
+                    <option>Mai 2026</option>
+                    <option>Avril 2026</option>
+                    <option>Mars 2026</option>
+                    <option>T1 2026 (Jan-Mar)</option>
+                    <option>T2 2026 (Avr-Jun)</option>
+                    <option>Année 2026</option>
+                    <option>Année 2025</option>
+                  </select>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:0.5rem;margin-top:0.5rem">
+                  <div class="metric-row"><div class="metric-label">CA HT</div><div class="metric-val" id="comp-ca">8 240 €</div></div>
+                  <div class="metric-row"><div class="metric-label">TVA collectée</div><div class="metric-val" id="comp-tva">1 648 €</div></div>
+                  <div class="metric-row"><div class="metric-label">CA TTC</div><div class="metric-val" id="comp-ttc" style="color:var(--green)">9 888 €</div></div>
+                  <div class="metric-row"><div class="metric-label">Factures</div><div class="metric-val" id="comp-nb">6</div></div>
+                </div>
+              </div>
+
+              <!-- ENVOI AUTO COMPTABLE -->
+              <div class="card">
+                <div class="card-header"><div class="card-title">🤖 Envoi automatique</div></div>
+                <div style="font-size:0.78rem;color:var(--muted);margin-bottom:1rem;line-height:1.6">Klara envoie automatiquement le rapport mensuel à ton expert-comptable chaque 1er du mois.</div>
+                <div class="form-group-app">
+                  <div class="form-label-app">Email comptable</div>
+                  <input class="form-input-app" placeholder="comptable@cabinet.fr" type="email"/>
+                </div>
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-top:0.5rem">
+                  <span style="font-size:0.78rem;color:var(--text)">Envoi automatique actif</span>
+                  <div class="toggle" onclick="this.classList.toggle('on');showToast(this.classList.contains('on')?'✅ Envoi automatique activé':'🔕 Envoi automatique désactivé')"></div>
+                </div>
+                <button class="btn-app btn-app-gold" style="width:100%;justify-content:center;margin-top:1rem;padding:0.625rem" onclick="showToast('✅ Email de test envoyé au comptable !')">Envoyer un test 📧</button>
+              </div>
+
+              <!-- INTÉGRATIONS -->
+              <div class="card">
+                <div class="card-header"><div class="card-title">🔌 Intégrations</div></div>
+                <div style="display:flex;flex-direction:column;gap:0.5rem">
+                  <div style="display:flex;align-items:center;justify-content:space-between;padding:0.625rem 0.875rem;background:var(--bg);border:1px solid var(--border);border-radius:6px">
+                    <span style="font-size:0.78rem;color:var(--text)">📗 Sage</span>
+                    <span class="badge-s badge-green">Connecté</span>
+                  </div>
+                  <div style="display:flex;align-items:center;justify-content:space-between;padding:0.625rem 0.875rem;background:var(--bg);border:1px solid var(--border);border-radius:6px">
+                    <span style="font-size:0.78rem;color:var(--text)">📘 QuickBooks</span>
+                    <button class="btn-app btn-app-outline" style="font-size:0.65rem;padding:0.2rem 0.6rem" onclick="showToast('🔌 QuickBooks connecté !')">Connecter</button>
+                  </div>
+                  <div style="display:flex;align-items:center;justify-content:space-between;padding:0.625rem 0.875rem;background:var(--bg);border:1px solid var(--border);border-radius:6px">
+                    <span style="font-size:0.78rem;color:var(--text)">📙 EBP</span>
+                    <button class="btn-app btn-app-outline" style="font-size:0.65rem;padding:0.2rem 0.6rem" onclick="showToast('🔌 EBP connecté !')">Connecter</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CONTRATS -->
+        <div class="view" id="view-contrats">
+
+          <!-- HEADER -->
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem">
+            <div>
+              <div style="font-size:0.72rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--blue);margin-bottom:0.25rem">✍️ Signature électronique</div>
+              <div style="font-family:'DM Serif Display',serif;font-size:1.4rem;color:var(--cream)">Contrats & Signature <em style="font-style:normal;font-size:0.9rem;color:var(--muted)">— Légalement valide en France</em></div>
+            </div>
+            <div style="display:flex;gap:0.75rem">
+              <button class="btn-app btn-app-outline" onclick="openModal('modal-template')">📋 Modèles</button>
+              <button class="btn-app btn-app-gold" onclick="openModal('modal-new-contrat')">+ Nouveau contrat</button>
+            </div>
+          </div>
+
+          <!-- STATS CONTRATS -->
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.5rem">
+            <div class="card" style="text-align:center">
+              <div style="font-size:1.75rem;margin-bottom:0.5rem">✅</div>
+              <div style="font-family:'DM Serif Display',serif;font-size:1.8rem;color:var(--green)">12</div>
+              <div style="font-size:0.72rem;color:var(--muted)">Contrats signés</div>
+            </div>
+            <div class="card" style="text-align:center">
+              <div style="font-size:1.75rem;margin-bottom:0.5rem">⏳</div>
+              <div style="font-family:'DM Serif Display',serif;font-size:1.8rem;color:var(--gold)">3</div>
+              <div style="font-size:0.72rem;color:var(--muted)">En attente signature</div>
+            </div>
+            <div class="card" style="text-align:center">
+              <div style="font-size:1.75rem;margin-bottom:0.5rem">⚡</div>
+              <div style="font-family:'DM Serif Display',serif;font-size:1.8rem;color:var(--blue)">2.4j</div>
+              <div style="font-size:0.72rem;color:var(--muted)">Délai moyen signature</div>
+            </div>
+            <div class="card" style="text-align:center">
+              <div style="font-size:1.75rem;margin-bottom:0.5rem">🔒</div>
+              <div style="font-family:'DM Serif Display',serif;font-size:1.8rem;color:var(--green)">100%</div>
+              <div style="font-size:0.72rem;color:var(--muted)">Valeur légale</div>
+            </div>
+          </div>
+
+          <!-- INFO LÉGALE -->
+          <div style="background:rgba(37,99,235,0.05);border:1px solid rgba(37,99,235,0.15);border-radius:8px;padding:1rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:1rem">
+            <span style="font-size:2rem;flex-shrink:0">🛡️</span>
+            <div>
+              <div style="font-size:0.85rem;font-weight:500;color:var(--blue);margin-bottom:0.25rem">Signature électronique certifiée eIDAS</div>
+              <div style="font-size:0.78rem;color:var(--muted)">Tes contrats ont la même valeur légale qu'une signature manuscrite en France et dans toute l'Union Européenne. Chaque signature est horodatée et archivée pendant 10 ans.</div>
+            </div>
+          </div>
+
+          <div style="display:grid;grid-template-columns:1.5fr 1fr;gap:1rem">
+
+            <!-- LISTE CONTRATS -->
+            <div class="table-wrap">
+              <div class="table-head" style="grid-template-columns:0.4fr 1.4fr 1fr 0.8fr 0.8fr">
+                <div class="th">#</div>
+                <div class="th">Client</div>
+                <div class="th">Type</div>
+                <div class="th">Date</div>
+                <div class="th">Statut</div>
+              </div>
+
+              <div class="table-row" style="grid-template-columns:0.4fr 1.4fr 1fr 0.8fr 0.8fr">
+                <div class="td" style="color:var(--muted);font-size:0.7rem">CTR-012</div>
+                <div class="td name">Studio Bleu</div>
+                <div class="td">Prestation design</div>
+                <div class="td" style="color:var(--muted)">12 mai</div>
+                <div class="td"><span class="badge-s badge-green">✅ Signé</span></div>
+              </div>
+              <div class="table-row" style="grid-template-columns:0.4fr 1.4fr 1fr 0.8fr 0.8fr">
+                <div class="td" style="color:var(--muted);font-size:0.7rem">CTR-011</div>
+                <div class="td name">Maison Duval</div>
+                <div class="td">Mission conseil</div>
+                <div class="td" style="color:var(--muted)">8 mai</div>
+                <div class="td"><span class="badge-s badge-yellow">⏳ En attente</span></div>
+              </div>
+              <div class="table-row" style="grid-template-columns:0.4fr 1.4fr 1fr 0.8fr 0.8fr">
+                <div class="td" style="color:var(--muted);font-size:0.7rem">CTR-010</div>
+                <div class="td name">Pixel Craft</div>
+                <div class="td">Développement app</div>
+                <div class="td" style="color:var(--muted)">2 mai</div>
+                <div class="td"><span class="badge-s badge-green">✅ Signé</span></div>
+              </div>
+              <div class="table-row" style="grid-template-columns:0.4fr 1.4fr 1fr 0.8fr 0.8fr">
+                <div class="td" style="color:var(--muted);font-size:0.7rem">CTR-009</div>
+                <div class="td name">Atelier Nord</div>
+                <div class="td">Identité visuelle</div>
+                <div class="td" style="color:var(--muted)">28 avr</div>
+                <div class="td"><span class="badge-s badge-yellow">⏳ En attente</span></div>
+              </div>
+              <div class="table-row" style="grid-template-columns:0.4fr 1.4fr 1fr 0.8fr 0.8fr">
+                <div class="td" style="color:var(--muted);font-size:0.7rem">CTR-008</div>
+                <div class="td name">Forge & Co.</div>
+                <div class="td">Shooting photo</div>
+                <div class="td" style="color:var(--muted)">20 avr</div>
+                <div class="td"><span class="badge-s badge-green">✅ Signé</span></div>
+              </div>
+              <div class="table-row" style="grid-template-columns:0.4fr 1.4fr 1fr 0.8fr 0.8fr">
+                <div class="td" style="color:var(--muted);font-size:0.7rem">CTR-007</div>
+                <div class="td name">Volta Design</div>
+                <div class="td">Formation Figma</div>
+                <div class="td" style="color:var(--muted)">15 avr</div>
+                <div class="td"><span class="badge-s badge-yellow">⏳ En attente</span></div>
+              </div>
+            </div>
+
+            <!-- PANNEAU DROIT -->
+            <div style="display:flex;flex-direction:column;gap:1rem">
+
+              <!-- MODÈLES -->
+              <div class="card">
+                <div class="card-header"><div class="card-title">📋 Modèles de contrats</div></div>
+                <div style="display:flex;flex-direction:column;gap:0.625rem">
+                  <div style="display:flex;align-items:center;gap:0.75rem;padding:0.75rem;background:var(--bg);border:1px solid var(--border);border-radius:6px;cursor:pointer;transition:all 0.2s" onmouseover="this.style.borderColor='var(--blue)'" onmouseout="this.style.borderColor='var(--border)'">
+                    <span style="font-size:1.25rem">📝</span>
+                    <div>
+                      <div style="font-size:0.8rem;font-weight:500;color:var(--cream)">Contrat de prestation</div>
+                      <div style="font-size:0.68rem;color:var(--muted)">Services freelance standard</div>
+                    </div>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:0.75rem;padding:0.75rem;background:var(--bg);border:1px solid var(--border);border-radius:6px;cursor:pointer;transition:all 0.2s" onmouseover="this.style.borderColor='var(--blue)'" onmouseout="this.style.borderColor='var(--border)'">
+                    <span style="font-size:1.25rem">💼</span>
+                    <div>
+                      <div style="font-size:0.8rem;font-weight:500;color:var(--cream)">Contrat de mission</div>
+                      <div style="font-size:0.68rem;color:var(--muted)">Consultation longue durée</div>
+                    </div>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:0.75rem;padding:0.75rem;background:var(--bg);border:1px solid var(--border);border-radius:6px;cursor:pointer;transition:all 0.2s" onmouseover="this.style.borderColor='var(--blue)'" onmouseout="this.style.borderColor='var(--border)'">
+                    <span style="font-size:1.25rem">🎨</span>
+                    <div>
+                      <div style="font-size:0.8rem;font-weight:500;color:var(--cream)">Contrat création</div>
+                      <div style="font-size:0.68rem;color:var(--muted)">Droits d'auteur inclus</div>
+                    </div>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:0.75rem;padding:0.75rem;background:var(--bg);border:1px solid var(--border);border-radius:6px;cursor:pointer;transition:all 0.2s" onmouseover="this.style.borderColor='var(--blue)'" onmouseout="this.style.borderColor='var(--border)'">
+                    <span style="font-size:1.25rem">🔒</span>
+                    <div>
+                      <div style="font-size:0.8rem;font-weight:500;color:var(--cream)">NDA / Confidentialité</div>
+                      <div style="font-size:0.68rem;color:var(--muted)">Accord de non-divulgation</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- PROCESSUS SIGNATURE -->
+              <div class="card">
+                <div class="card-header"><div class="card-title">⚡ Processus de signature</div></div>
+                <div style="display:flex;flex-direction:column;gap:0.875rem">
+                  <div style="display:flex;align-items:flex-start;gap:0.75rem">
+                    <div style="width:24px;height:24px;border-radius:50%;background:var(--blue);display:flex;align-items:center;justify-content:center;font-size:0.65rem;font-weight:600;color:#fff;flex-shrink:0">1</div>
+                    <div><div style="font-size:0.8rem;color:var(--cream)">Tu crées le contrat</div><div style="font-size:0.7rem;color:var(--muted)">Depuis un modèle ou de zéro</div></div>
+                  </div>
+                  <div style="display:flex;align-items:flex-start;gap:0.75rem">
+                    <div style="width:24px;height:24px;border-radius:50%;background:var(--blue);display:flex;align-items:center;justify-content:center;font-size:0.65rem;font-weight:600;color:#fff;flex-shrink:0">2</div>
+                    <div><div style="font-size:0.8rem;color:var(--cream)">Tu envoies par email</div><div style="font-size:0.7rem;color:var(--muted)">Le client reçoit un lien sécurisé</div></div>
+                  </div>
+                  <div style="display:flex;align-items:flex-start;gap:0.75rem">
+                    <div style="width:24px;height:24px;border-radius:50%;background:var(--blue);display:flex;align-items:center;justify-content:center;font-size:0.65rem;font-weight:600;color:#fff;flex-shrink:0">3</div>
+                    <div><div style="font-size:0.8rem;color:var(--cream)">Le client signe en ligne</div><div style="font-size:0.7rem;color:var(--muted)">En 1 clic depuis son téléphone</div></div>
+                  </div>
+                  <div style="display:flex;align-items:flex-start;gap:0.75rem">
+                    <div style="width:24px;height:24px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;font-size:0.65rem;font-weight:600;color:#fff;flex-shrink:0">✓</div>
+                    <div><div style="font-size:0.8rem;color:var(--cream)">PDF signé archivé</div><div style="font-size:0.7rem;color:var(--muted)">Horodaté et stocké 10 ans</div></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ÉQUIPE -->
+        <div class="view" id="view-equipe">
+
+          <!-- HEADER -->
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem">
+            <div>
+              <div style="font-size:0.72rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--blue);margin-bottom:0.25rem">🏢 Gestion d'équipe</div>
+              <div style="font-family:'DM Serif Display',serif;font-size:1.4rem;color:var(--cream)">Mon équipe <em style="font-style:normal;font-size:0.9rem;color:var(--muted)">— Plan Équipe</em></div>
+            </div>
+            <button class="btn-app btn-app-gold" onclick="openModal('modal-invite')">+ Inviter un membre</button>
+          </div>
+
+          <!-- STATS ÉQUIPE -->
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.5rem">
+            <div class="card" style="text-align:center">
+              <div style="font-size:1.75rem;margin-bottom:0.5rem">👥</div>
+              <div style="font-family:'DM Serif Display',serif;font-size:1.8rem;color:var(--blue)">4</div>
+              <div style="font-size:0.72rem;color:var(--muted)">Membres actifs</div>
+            </div>
+            <div class="card" style="text-align:center">
+              <div style="font-size:1.75rem;margin-bottom:0.5rem">📄</div>
+              <div style="font-family:'DM Serif Display',serif;font-size:1.8rem;color:var(--green)">47</div>
+              <div style="font-size:0.72rem;color:var(--muted)">Devis ce mois</div>
+            </div>
+            <div class="card" style="text-align:center">
+              <div style="font-size:1.75rem;margin-bottom:0.5rem">💰</div>
+              <div style="font-family:'DM Serif Display',serif;font-size:1.8rem;color:var(--cream)">24 640 €</div>
+              <div style="font-size:0.72rem;color:var(--muted)">CA équipe total</div>
+            </div>
+            <div class="card" style="text-align:center">
+              <div style="font-size:1.75rem;margin-bottom:0.5rem">⭐</div>
+              <div style="font-family:'DM Serif Display',serif;font-size:1.8rem;color:var(--gold)">94%</div>
+              <div style="font-size:0.72rem;color:var(--muted)">Taux satisfaction</div>
+            </div>
+          </div>
+
+          <div style="display:grid;grid-template-columns:1.5fr 1fr;gap:1rem">
+
+            <!-- LISTE MEMBRES -->
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title">👥 Membres de l'équipe</div>
+                <div class="card-action" onclick="openModal('modal-invite')">+ Inviter</div>
+              </div>
+
+              <!-- MEMBRE 1 - ADMIN -->
+              <div style="display:flex;align-items:center;gap:1rem;padding:1rem 0;border-bottom:1px solid var(--border)">
+                <div style="width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--blue-light));display:flex;align-items:center;justify-content:center;font-size:0.8rem;font-weight:600;color:#fff;flex-shrink:0">SL</div>
+                <div style="flex:1">
+                  <div style="font-size:0.85rem;font-weight:500;color:var(--cream)">Sophie Laurent <span style="font-size:0.65rem;background:rgba(37,99,235,0.1);color:var(--blue);padding:0.15rem 0.5rem;border-radius:100px;margin-left:0.4rem">Admin</span></div>
+                  <div style="font-size:0.72rem;color:var(--muted)">sophie@klara.fr · Connectée il y a 2h</div>
+                </div>
+                <div style="text-align:right">
+                  <div style="font-size:0.82rem;font-weight:500;color:var(--green)">8 240 €</div>
+                  <div style="font-size:0.65rem;color:var(--muted)">CA ce mois</div>
+                </div>
+              </div>
+
+              <!-- MEMBRE 2 -->
+              <div style="display:flex;align-items:center;gap:1rem;padding:1rem 0;border-bottom:1px solid var(--border)">
+                <div style="width:42px;height:42px;border-radius:50%;background:#7c3aed;display:flex;align-items:center;justify-content:center;font-size:0.8rem;font-weight:600;color:#fff;flex-shrink:0">MR</div>
+                <div style="flex:1">
+                  <div style="font-size:0.85rem;font-weight:500;color:var(--cream)">Marc Rousseau <span style="font-size:0.65rem;background:rgba(124,58,237,0.1);color:#7c3aed;padding:0.15rem 0.5rem;border-radius:100px;margin-left:0.4rem">Commercial</span></div>
+                  <div style="font-size:0.72rem;color:var(--muted)">marc@klara.fr · Connecté il y a 1j</div>
+                </div>
+                <div style="text-align:right">
+                  <div style="font-size:0.82rem;font-weight:500;color:var(--green)">7 800 €</div>
+                  <div style="font-size:0.65rem;color:var(--muted)">CA ce mois</div>
+                </div>
+              </div>
+
+              <!-- MEMBRE 3 -->
+              <div style="display:flex;align-items:center;gap:1rem;padding:1rem 0;border-bottom:1px solid var(--border)">
+                <div style="width:42px;height:42px;border-radius:50%;background:#059669;display:flex;align-items:center;justify-content:center;font-size:0.8rem;font-weight:600;color:#fff;flex-shrink:0">JD</div>
+                <div style="flex:1">
+                  <div style="font-size:0.85rem;font-weight:500;color:var(--cream)">Julie Dupont <span style="font-size:0.65rem;background:rgba(5,150,105,0.1);color:#059669;padding:0.15rem 0.5rem;border-radius:100px;margin-left:0.4rem">Comptable</span></div>
+                  <div style="font-size:0.72rem;color:var(--muted)">julie@klara.fr · Connectée il y a 3h</div>
+                </div>
+                <div style="text-align:right">
+                  <div style="font-size:0.82rem;font-weight:500;color:var(--green)">5 400 €</div>
+                  <div style="font-size:0.65rem;color:var(--muted)">CA ce mois</div>
+                </div>
+              </div>
+
+              <!-- MEMBRE 4 - EN ATTENTE -->
+              <div style="display:flex;align-items:center;gap:1rem;padding:1rem 0">
+                <div style="width:42px;height:42px;border-radius:50%;background:var(--border);border:2px dashed var(--border2);display:flex;align-items:center;justify-content:center;font-size:0.8rem;color:var(--muted);flex-shrink:0">?</div>
+                <div style="flex:1">
+                  <div style="font-size:0.85rem;color:var(--muted)">thomas@studio.fr</div>
+                  <div style="font-size:0.72rem;color:var(--muted)">Invitation envoyée · En attente</div>
+                </div>
+                <div>
+                  <span style="font-size:0.65rem;background:rgba(217,119,6,0.1);color:var(--gold);padding:0.2rem 0.6rem;border-radius:100px">En attente</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- PERMISSIONS + ACTIVITÉ -->
+            <div style="display:flex;flex-direction:column;gap:1rem">
+
+              <!-- RÔLES & PERMISSIONS -->
+              <div class="card">
+                <div class="card-header"><div class="card-title">🔐 Rôles & Permissions</div></div>
+                <div style="display:flex;flex-direction:column;gap:0.75rem">
+                  <div style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:0.875rem">
+                    <div style="font-size:0.8rem;font-weight:500;color:var(--blue);margin-bottom:0.5rem">👑 Admin</div>
+                    <div style="font-size:0.72rem;color:var(--muted)">Accès complet — devis, factures, clients, paramètres, équipe</div>
+                  </div>
+                  <div style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:0.875rem">
+                    <div style="font-size:0.8rem;font-weight:500;color:#7c3aed;margin-bottom:0.5rem">💼 Commercial</div>
+                    <div style="font-size:0.72rem;color:var(--muted)">Devis & clients uniquement — pas accès aux finances</div>
+                  </div>
+                  <div style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:0.875rem">
+                    <div style="font-size:0.8rem;font-weight:500;color:#059669;margin-bottom:0.5rem">📊 Comptable</div>
+                    <div style="font-size:0.72rem;color:var(--muted)">Factures & rapports uniquement — lecture seule</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- ACTIVITÉ ÉQUIPE -->
+              <div class="card">
+                <div class="card-header"><div class="card-title">📋 Activité équipe</div></div>
+                <div class="activity-item">
+                  <div class="activity-dot" style="background:#7c3aed"></div>
+                  <div><div class="activity-text"><strong>Marc</strong> a créé le devis #091</div><div class="activity-time">Il y a 1h</div></div>
+                </div>
+                <div class="activity-item">
+                  <div class="activity-dot" style="background:#059669"></div>
+                  <div><div class="activity-text"><strong>Julie</strong> a validé la facture #047</div><div class="activity-time">Il y a 3h</div></div>
+                </div>
+                <div class="activity-item">
+                  <div class="activity-dot" style="background:var(--blue)"></div>
+                  <div><div class="activity-text"><strong>Sophie</strong> a ajouté le client Pixel Craft</div><div class="activity-time">Hier</div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SETTINGS -->
+        <div class="view" id="view-settings">
+          <div style="max-width:600px">
+            <div class="card" style="margin-bottom:1rem">
+              <div class="card-header"><div class="card-title">Profil freelance</div></div>
+              <div class="form-row-app">
+                <div class="form-group-app"><div class="form-label-app">Prénom</div><input class="form-input-app" value="Sophie"/></div>
+                <div class="form-group-app"><div class="form-label-app">Nom</div><input class="form-input-app" value="Laurent"/></div>
+              </div>
+              <div class="form-group-app"><div class="form-label-app">Email</div><input class="form-input-app" value="sophie@studio-sl.fr"/></div>
+              <div class="form-group-app"><div class="form-label-app">SIRET</div><input class="form-input-app" value="12345678901234"/></div>
+              <button class="btn-app btn-app-gold" onclick="showToast('✅ Profil mis à jour !')">Enregistrer</button>
+            </div>
+            <div class="card">
+              <div class="card-header"><div class="card-title">Plan & Abonnement</div></div>
+              <div class="metric-row"><div class="metric-label">Plan actuel</div><div class="metric-val"><span class="badge-s badge-green">✦ Fondateur — 19€/mois</span></div></div>
+              <div class="metric-row"><div class="metric-label">Prix garanti à vie</div><div class="metric-val" style="color:var(--green)">✓ Bloqué</div></div>
+              <div class="metric-row"><div class="metric-label">Prochain renouvellement</div><div class="metric-val">1er juillet 2026</div></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- MODALS APP -->
+  <div class="modal-overlay" id="modal-new-contrat">
+    <div class="modal">
+      <div class="modal-header"><div class="modal-title">✍️ Nouveau contrat</div><div class="modal-close" onclick="closeModal('modal-new-contrat')">✕</div></div>
+      <div class="modal-body">
+        <div class="form-row-app">
+          <div class="form-group-app"><div class="form-label-app">Client *</div><select class="form-select-app"><option>Studio Bleu</option><option>Maison Duval</option><option>Atelier Nord</option><option>Forge & Co.</option></select></div>
+          <div class="form-group-app"><div class="form-label-app">Type de contrat *</div><select class="form-select-app"><option>Contrat de prestation</option><option>Contrat de mission</option><option>Contrat création</option><option>NDA / Confidentialité</option></select></div>
+        </div>
+        <div class="form-group-app"><div class="form-label-app">Objet du contrat *</div><input class="form-input-app" placeholder="Ex : Refonte site web et identité visuelle"/></div>
+        <div class="form-row-app">
+          <div class="form-group-app"><div class="form-label-app">Date de début</div><input class="form-input-app" type="date" value="2026-05-24"/></div>
+          <div class="form-group-app"><div class="form-label-app">Date de fin</div><input class="form-input-app" type="date"/></div>
+        </div>
+        <div class="form-row-app">
+          <div class="form-group-app"><div class="form-label-app">Montant (€)</div><input class="form-input-app" type="number" placeholder="3200"/></div>
+          <div class="form-group-app"><div class="form-label-app">Conditions de paiement</div><select class="form-select-app"><option>30 jours après signature</option><option>50% avance + 50% livraison</option><option>À la livraison</option></select></div>
+        </div>
+        <div class="form-group-app"><div class="form-label-app">Clauses particulières</div><textarea class="form-textarea-app" rows="3" placeholder="Ex : Le client s'engage à fournir les éléments nécessaires dans un délai de 5 jours..."></textarea></div>
+        <div style="background:rgba(5,150,105,0.05);border:1px solid rgba(5,150,105,0.15);border-radius:6px;padding:0.875rem;display:flex;align-items:center;gap:0.75rem">
+          <span style="font-size:1.25rem">✅</span>
+          <div style="font-size:0.78rem;color:var(--muted)">Le contrat sera envoyé avec un <strong style="color:var(--cream)">lien de signature sécurisé</strong>. Légalement valide en France (eIDAS).</div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-app btn-app-outline" onclick="closeModal('modal-new-contrat')">Annuler</button>
+        <button class="btn-app btn-app-outline">👁 Aperçu</button>
+        <button class="btn-app btn-app-gold" onclick="showToast('✅ Contrat créé et lien de signature envoyé !');closeModal('modal-new-contrat')">Créer & Envoyer pour signature ✍️</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="modal-template">
+    <div class="modal">
+      <div class="modal-header"><div class="modal-title">📋 Modèles de contrats</div><div class="modal-close" onclick="closeModal('modal-template')">✕</div></div>
+      <div class="modal-body">
+        <div style="display:flex;flex-direction:column;gap:0.875rem">
+          <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:1.25rem;cursor:pointer;transition:all 0.2s" onclick="showToast('📝 Modèle chargé !');closeModal('modal-template');openModal('modal-new-contrat')" onmouseover="this.style.borderColor='var(--blue)'" onmouseout="this.style.borderColor='var(--border)'">
+            <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:0.5rem"><span style="font-size:1.25rem">📝</span><div style="font-size:0.88rem;font-weight:500;color:var(--cream)">Contrat de prestation de services</div></div>
+            <div style="font-size:0.75rem;color:var(--muted)">Le plus utilisé par les freelances. Inclut : objet, durée, tarif, conditions de paiement, propriété intellectuelle, confidentialité.</div>
+          </div>
+          <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:1.25rem;cursor:pointer;transition:all 0.2s" onclick="showToast('💼 Modèle chargé !');closeModal('modal-template');openModal('modal-new-contrat')" onmouseover="this.style.borderColor='var(--blue)'" onmouseout="this.style.borderColor='var(--border)'">
+            <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:0.5rem"><span style="font-size:1.25rem">💼</span><div style="font-size:0.88rem;font-weight:500;color:var(--cream)">Contrat de mission longue durée</div></div>
+            <div style="font-size:0.75rem;color:var(--muted)">Pour les missions de +3 mois. Inclut : TJM, renouvellement, clause de sortie, non-concurrence.</div>
+          </div>
+          <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:1.25rem;cursor:pointer;transition:all 0.2s" onclick="showToast('🎨 Modèle chargé !');closeModal('modal-template');openModal('modal-new-contrat')" onmouseover="this.style.borderColor='var(--blue)'" onmouseout="this.style.borderColor='var(--border)'">
+            <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:0.5rem"><span style="font-size:1.25rem">🎨</span><div style="font-size:0.88rem;font-weight:500;color:var(--cream)">Contrat de création & droits d'auteur</div></div>
+            <div style="font-size:0.75rem;color:var(--muted)">Pour les créatifs (designers, photographes, vidéastes). Inclut : cession de droits, usage autorisé, crédits.</div>
+          </div>
+          <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:1.25rem;cursor:pointer;transition:all 0.2s" onclick="showToast('🔒 Modèle chargé !');closeModal('modal-template');openModal('modal-new-contrat')" onmouseover="this.style.borderColor='var(--blue)'" onmouseout="this.style.borderColor='var(--border)'">
+            <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:0.5rem"><span style="font-size:1.25rem">🔒</span><div style="font-size:0.88rem;font-weight:500;color:var(--cream)">NDA — Accord de confidentialité</div></div>
+            <div style="font-size:0.75rem;color:var(--muted)">Protège tes informations confidentielles. Inclut : durée, pénalités, exclusions.</div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer"><button class="btn-app btn-app-outline" onclick="closeModal('modal-template')">Fermer</button></div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="modal-invite">
+    <div class="modal">
+      <div class="modal-header"><div class="modal-title">👥 Inviter un membre</div><div class="modal-close" onclick="closeModal('modal-invite')">✕</div></div>
+      <div class="modal-body">
+        <div style="background:rgba(37,99,235,0.05);border:1px solid rgba(37,99,235,0.15);border-radius:8px;padding:1rem;margin-bottom:1.25rem;display:flex;gap:0.75rem">
+          <span style="font-size:1.5rem">📧</span>
+          <div><div style="font-size:0.8rem;font-weight:500;color:var(--cream)">Invitation par email</div><div style="font-size:0.72rem;color:var(--muted)">Le membre recevra un email pour rejoindre ton espace Klara</div></div>
+        </div>
+        <div class="form-group-app"><div class="form-label-app">Email du membre *</div><input class="form-input-app" placeholder="collaborateur@email.fr" type="email"/></div>
+        <div class="form-group-app">
+          <div class="form-label-app">Rôle *</div>
+          <select class="form-select-app">
+            <option>👑 Admin — Accès complet</option>
+            <option>💼 Commercial — Devis & clients</option>
+            <option>📊 Comptable — Factures & rapports</option>
+            <option>👁 Lecteur — Lecture seule</option>
+          </select>
+        </div>
+        <div class="form-group-app"><div class="form-label-app">Message personnalisé (optionnel)</div><textarea class="form-textarea-app" rows="2" placeholder="Ex : Salut Thomas, je t'invite à rejoindre notre espace Klara..."></textarea></div>
+        <div style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:0.875rem;font-size:0.78rem;color:var(--muted)">
+          💡 Places disponibles : <strong style="color:var(--cream)">1 place restante</strong> sur 5 (Plan Équipe)
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-app btn-app-outline" onclick="closeModal('modal-invite')">Annuler</button>
+        <button class="btn-app btn-app-gold" onclick="showToast('✅ Invitation envoyée !');closeModal('modal-invite')">Envoyer l'invitation 📧</button>
+      </div>
+    </div>
+  </div>
+  <div class="modal-overlay" id="modal-new-devis">
+    <div class="modal">
+      <div class="modal-header"><div class="modal-title">Nouveau devis</div><div class="modal-close" onclick="closeModal('modal-new-devis')">✕</div></div>
+      <div class="modal-body">
+        <div class="form-row-app"><div class="form-group-app"><div class="form-label-app">Client *</div><select class="form-select-app"><option>Studio Bleu</option><option>Maison Duval</option><option>Atelier Nord</option></select></div><div class="form-group-app"><div class="form-label-app">Date d'émission</div><input class="form-input-app" type="date" value="2026-05-24"/></div></div>
+        <div class="form-group-app"><div class="form-label-app">Objet *</div><input class="form-input-app" placeholder="Ex : Refonte site web + SEO"/></div>
+        <div class="form-group-app"><div class="form-label-app">Description</div><textarea class="form-textarea-app" placeholder="Détail des prestations..."></textarea></div>
+        <div class="form-row-app"><div class="form-group-app"><div class="form-label-app">Montant HT (€)</div><input class="form-input-app" type="number"/></div><div class="form-group-app"><div class="form-label-app">TVA</div><select class="form-select-app"><option>20%</option><option>0%</option></select></div></div>
+      </div>
+      <div class="modal-footer"><button class="btn-app btn-app-outline" onclick="closeModal('modal-new-devis')">Annuler</button><button class="btn-app btn-app-gold" onclick="addDevis()">Créer & Envoyer</button></div>
+    </div>
+  </div>
+  <div class="modal-overlay" id="modal-ai-devis">
+    <div class="modal">
+      <div class="modal-header"><div class="modal-title">✦ Générer un devis avec l'IA</div><div class="modal-close" onclick="closeModal('modal-ai-devis')">✕</div></div>
+      <div class="modal-body"><div class="form-group-app"><div class="form-label-app">Décris ton projet</div><textarea class="form-textarea-app" id="modal-ia-desc" rows="4" placeholder="Ex : Création identité visuelle pour boulangerie, logo + charte, 2 semaines, 1200€"></textarea></div><div id="modal-ia-output" style="display:none"><div class="form-label-app" style="margin-bottom:0.5rem">Devis généré</div><div class="ai-result" id="modal-ia-result"></div></div></div>
+      <div class="modal-footer"><button class="btn-app btn-app-outline" onclick="closeModal('modal-ai-devis')">Fermer</button><button class="btn-app btn-app-gold" onclick="generateModalIA()">✦ Générer</button></div>
+    </div>
+  </div>
+  <div class="modal-overlay" id="modal-new-facture">
+    <div class="modal">
+      <div class="modal-header"><div class="modal-title">Nouvelle facture</div><div class="modal-close" onclick="closeModal('modal-new-facture')">✕</div></div>
+      <div class="modal-body"><div class="form-row-app"><div class="form-group-app"><div class="form-label-app">Client *</div><select class="form-select-app"><option>Studio Bleu</option><option>Maison Duval</option><option>Atelier Nord</option></select></div><div class="form-group-app"><div class="form-label-app">Date</div><input class="form-input-app" type="date" value="2026-05-24"/></div></div><div class="form-group-app"><div class="form-label-app">Objet *</div><input class="form-input-app"/></div><div class="form-row-app"><div class="form-group-app"><div class="form-label-app">Montant HT</div><input class="form-input-app" type="number"/></div><div class="form-group-app"><div class="form-label-app">TVA</div><select class="form-select-app"><option>20%</option><option>0%</option></select></div></div></div>
+      <div class="modal-footer"><button class="btn-app btn-app-outline" onclick="closeModal('modal-new-facture')">Annuler</button><button class="btn-app btn-app-gold" onclick="showToast('✅ Facture créée !');closeModal('modal-new-facture')">Créer & Envoyer</button></div>
+    </div>
+  </div>
+  <div class="modal-overlay" id="modal-new-client">
+    <div class="modal">
+      <div class="modal-header"><div class="modal-title">Nouveau client</div><div class="modal-close" onclick="closeModal('modal-new-client')">✕</div></div>
+      <div class="modal-body"><div class="form-row-app"><div class="form-group-app"><div class="form-label-app">Nom *</div><input class="form-input-app" placeholder="Studio Bleu"/></div><div class="form-group-app"><div class="form-label-app">Contact</div><input class="form-input-app" placeholder="Prénom Nom"/></div></div><div class="form-row-app"><div class="form-group-app"><div class="form-label-app">Email *</div><input class="form-input-app" type="email"/></div><div class="form-group-app"><div class="form-label-app">Téléphone</div><input class="form-input-app"/></div></div></div>
+      <div class="modal-footer"><button class="btn-app btn-app-outline" onclick="closeModal('modal-new-client')">Annuler</button><button class="btn-app btn-app-gold" onclick="showToast('✅ Client ajouté !');closeModal('modal-new-client')">Ajouter</button></div>
+    </div>
+  </div>
+  <div class="modal-overlay" id="modal-stripe">
+    <div class="modal">
+      <div class="modal-header"><div class="modal-title">💳 Demander un paiement</div><div class="modal-close" onclick="closeModal('modal-stripe')">✕</div></div>
+      <div class="modal-body"><div style="background:rgba(37,99,235,0.05);border:1px solid rgba(37,99,235,0.15);border-radius:8px;padding:1rem;margin-bottom:1rem;display:flex;gap:0.75rem;align-items:center"><span style="font-size:1.5rem">⚡</span><div><div style="font-size:0.8rem;font-weight:500;color:var(--cream)">Lien de paiement Stripe</div><div style="font-size:0.72rem;color:var(--muted)">Ton client paie en ligne — tu es crédité en 2 jours</div></div></div><div class="form-group-app"><div class="form-label-app">Facture</div><select class="form-select-app"><option>FAC-046 — Atelier Nord — 2 400€</option><option>FAC-045 — Maison Duval — 650€</option></select></div><div class="form-group-app"><div class="form-label-app">Email client</div><input class="form-input-app" value="clara@ateliernord.fr" type="email"/></div></div>
+      <div class="modal-footer"><button class="btn-app btn-app-outline" onclick="closeModal('modal-stripe')">Annuler</button><button class="btn-app btn-app-gold" onclick="showToast('✅ Lien de paiement envoyé !');closeModal('modal-stripe')">Envoyer le lien 💳</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"><span id="toastIcon">✅</span><span id="toastText">Action réalisée</span></div>
+
+<script>
+// ========== PAGE NAVIGATION ==========
+function showPage(page){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  window.scrollTo(0,0);
+  if(page==='app'){
+    initCharts();
+    document.getElementById('loginPage').classList.add('show');
+    document.getElementById('loginPage').style.opacity='1';
+    document.getElementById('loginPage').style.display='flex';
+  } else {
+    document.getElementById('loginPage').classList.remove('show');
+    document.getElementById('loginPage').style.display='none';
+  }
+}
+
+// ========== CALCULATOR ==========
+function updateCalc(){
+  const temps=+document.getElementById('sl-temps').value;
+  const taux=+document.getElementById('sl-taux').value;
+  const impay=+document.getElementById('sl-impay').value;
+  const montant=+document.getElementById('sl-montant').value;
+  const devis=+document.getElementById('sl-devis').value;
+
+  document.getElementById('val-temps').textContent=temps+'h';
+  document.getElementById('val-taux').textContent=taux+'€/h';
+  document.getElementById('val-impay').textContent=impay;
+  document.getElementById('val-montant').textContent=montant.toLocaleString('fr-FR')+'€';
+  document.getElementById('val-devis').textContent=devis;
+
+  // Klara saves 70% of admin time
+  const tempsGagne=Math.round(temps*0.7*4*taux);
+  // Klara recovers 65% of unpaid invoices
+  const impayRec=Math.round(impay*montant*0.65);
+  // Klara converts 30% more quotes
+  const devisConv=Math.round(devis*montant*0.3);
+  const total=tempsGagne+impayRec+devisConv;
+  const roi=Math.round(total/19);
+
+  document.getElementById('res-temps').textContent='+'+tempsGagne.toLocaleString('fr-FR')+'€';
+  document.getElementById('res-impay').textContent='+'+impayRec.toLocaleString('fr-FR')+'€';
+  document.getElementById('res-devis').textContent='+'+devisConv.toLocaleString('fr-FR')+'€';
+  document.getElementById('result-total').textContent=total.toLocaleString('fr-FR')+'€';
+  document.getElementById('roi-value').textContent=roi+'x';
+  document.getElementById('roi-gain').textContent=total.toLocaleString('fr-FR')+'€';
+  document.getElementById('calc-cta-val').textContent=total.toLocaleString('fr-FR')+'€/mois';
+}
+updateCalc();
+
+// ========== DATA ==========
+const devisData=[
+  {id:'DEV-091',client:'Studio Bleu',objet:'Refonte identité visuelle',montant:'3 200 €',date:'12 juin 2026',statut:'signe'},
+  {id:'DEV-090',client:'Maison Duval',objet:'Site vitrine + SEO',montant:'2 800 €',date:'8 juin 2026',statut:'en_attente'},
+  {id:'DEV-089',client:'Atelier Nord',objet:'Campagne réseaux sociaux',montant:'1 500 €',date:'5 juin 2026',statut:'en_attente'},
+  {id:'DEV-088',client:'Forge & Co.',objet:'Shooting photo produits',montant:'980 €',date:'28 mai 2026',statut:'signe'},
+  {id:'DEV-087',client:'Pixel Craft',objet:'Application mobile MVP',montant:'8 400 €',date:'20 mai 2026',statut:'expire'},
+  {id:'DEV-086',client:'Studio Bleu',objet:'Formation Figma (2j)',montant:'1 200 €',date:'15 mai 2026',statut:'signe'},
+  {id:'DEV-085',client:'Maison Duval',objet:'Newsletter mensuelle x6',montant:'600 €',date:'10 mai 2026',statut:'en_attente'},
+  {id:'DEV-084',client:'Lumière Films',objet:'Motion design intro',montant:'750 €',date:'2 mai 2026',statut:'expire'},
+  {id:'DEV-083',client:'Atelier Nord',objet:'Logo + charte graphique',montant:'1 800 €',date:'25 avr 2026',statut:'en_attente'},
+];
+const facturesData=[
+  {id:'FAC-047',client:'Studio Bleu',ht:'1 500 €',ttc:'1 800 €',echeance:'15 mai',statut:'green',label:'Payée'},
+  {id:'FAC-046',client:'Atelier Nord',ht:'2 000 €',ttc:'2 400 €',echeance:'8 mai',statut:'red',label:'En retard'},
+  {id:'FAC-045',client:'Maison Duval',ht:'541 €',ttc:'650 €',echeance:'3 juin',statut:'yellow',label:'En cours'},
+  {id:'FAC-044',client:'Forge & Co.',ht:'816 €',ttc:'980 €',echeance:'2 mai',statut:'green',label:'Payée'},
+  {id:'FAC-043',client:'Pixel Craft',ht:'1 000 €',ttc:'1 200 €',echeance:'8 juin',statut:'yellow',label:'En cours'},
+  {id:'FAC-042',client:'Studio Bleu',ht:'1 000 €',ttc:'1 200 €',echeance:'10 avr',statut:'green',label:'Payée'},
+];
+const clientsData=[
+  {initials:'SB',color:'#2563eb',name:'Studio Bleu',contact:'Léa Martin',ca:'6 200 €',factures:4},
+  {initials:'MD',color:'#7c3aed',name:'Maison Duval',contact:'Paul Duval',ca:'1 250 €',factures:2},
+  {initials:'AN',color:'#0891b2',name:'Atelier Nord',contact:'Clara Petit',ca:'4 200 €',factures:3},
+  {initials:'FC',color:'#059669',name:'Forge & Co.',contact:'Romain Forge',ca:'1 960 €',factures:2},
+  {initials:'PC',color:'#3b82f6',name:'Pixel Craft',contact:'Nina Rousseau',ca:'9 600 €',factures:2},
+  {initials:'LF',color:'#db2777',name:'Lumière Films',contact:'Marc Delorme',ca:'750 €',factures:1},
+  {initials:'VD',color:'#d97706',name:'Volta Design',contact:'Emma Volta',ca:'2 100 €',factures:2},
+  {initials:'BS',color:'#0d9488',name:'Bois & Sens',contact:'Thomas Gros',ca:'480 €',factures:1},
+];
+const relancesData=[
+  {icon:'⏰',label:'Rappel J-7 avant échéance',desc:'Email 7 jours avant la date limite',on:true},
+  {icon:'🔔',label:'Relance à l\'échéance',desc:'Email le jour J si non réglée',on:true},
+  {icon:'📩',label:'Relance J+3',desc:'Deuxième relance 3 jours après',on:true},
+  {icon:'⚡',label:'Relance urgente J+15',desc:'Email ferme avec mention des pénalités',on:false},
+  {icon:'📋',label:'Résumé mensuel client',desc:'Récapitulatif des factures en cours',on:false},
+];
+
+// ========== RENDER ==========
+function devisBadge(s){
+  if(s==='signe')return '<span class="badge-s badge-green">Signé</span>';
+  if(s==='en_attente')return '<span class="badge-s badge-yellow">En attente</span>';
+  return '<span class="badge-s badge-red">Expiré</span>';
+}
+function renderDevis(filter='all'){
+  const rows=filter==='all'?devisData:devisData.filter(d=>d.statut===filter);
+  document.getElementById('devisTable').innerHTML=rows.map(d=>`
+    <div class="table-row" style="grid-template-columns:0.4fr 1.4fr 1fr 0.8fr 0.8fr 0.7fr">
+      <div class="td" style="color:var(--muted);font-size:0.7rem">${d.id}</div>
+      <div class="td name">${d.client}</div>
+      <div class="td">${d.objet}</div>
+      <div class="td amount">${d.montant}</div>
+      <div class="td" style="color:var(--muted)">${d.date}</div>
+      <div class="td">${devisBadge(d.statut)}</div>
+    </div>`).join('');
+}
+function renderFactures(){
+  document.getElementById('facturesTable').innerHTML=facturesData.map(f=>`
+    <div class="table-row" style="grid-template-columns:0.5fr 1.4fr 0.8fr 0.8fr 0.8fr 0.7fr">
+      <div class="td" style="color:var(--muted);font-size:0.7rem">${f.id}</div>
+      <div class="td name">${f.client}</div>
+      <div class="td amount">${f.ht}</div>
+      <div class="td amount">${f.ttc}</div>
+      <div class="td" style="color:var(--muted)">${f.echeance}</div>
+      <div class="td"><span class="badge-s badge-${f.statut}">${f.label}</span></div>
+    </div>`).join('');
+}
+function renderClients(){
+  document.getElementById('clientGrid').innerHTML=clientsData.map(c=>`
+    <div class="client-card">
+      <div class="client-avatar" style="background:${c.color}">${c.initials}</div>
+      <div class="client-name">${c.name}</div>
+      <div class="client-meta">${c.contact}</div>
+      <div class="client-stats">
+        <div class="client-stat"><strong>${c.ca}</strong>CA total</div>
+        <div class="client-stat"><strong>${c.factures}</strong>Factures</div>
+      </div>
+    </div>`).join('');
+}
+function renderRelances(){
+  document.getElementById('relanceRules').innerHTML=relancesData.map((r,i)=>`
+    <div class="relance-item">
+      <div class="relance-icon">${r.icon}</div>
+      <div class="relance-info"><div class="relance-title">${r.label}</div><div class="relance-meta">${r.desc}</div></div>
+      <div class="toggle ${r.on?'on':''}" onclick="toggleRelance(${i},this)"></div>
+    </div>`).join('');
+}
+function toggleRelance(i,el){relancesData[i].on=!relancesData[i].on;el.classList.toggle('on');showToast(relancesData[i].on?'✅ Relance activée':'🔕 Relance désactivée')}
+function filterDevis(filter,el){document.querySelectorAll('#view-devis .filter-chip').forEach(c=>c.classList.remove('active'));el.classList.add('active');renderDevis(filter)}
+
+// ========== APP NAVIGATION ==========
+const titles={dashboard:'Dashboard',devis:'Devis',factures:'Factures',clients:'Clients',relances:'Relances automatiques',ia:'Rédaction IA ✦',comptable:'Export comptable 📊',contrats:'Contrats & Signature ✍️',equipe:'Mon équipe 🏢',settings:'Paramètres'};
+
+function updateComptable(periode){
+  const data={
+    'Mai 2026':{ca:'8 240 €',tva:'1 648 €',ttc:'9 888 €',nb:'6'},
+    'Avril 2026':{ca:'7 000 €',tva:'1 400 €',ttc:'8 400 €',nb:'5'},
+    'Mars 2026':{ca:'6 700 €',tva:'1 340 €',ttc:'8 040 €',nb:'7'},
+    'T1 2026 (Jan-Mar)':{ca:'17 400 €',tva:'3 480 €',ttc:'20 880 €',nb:'18'},
+    'T2 2026 (Avr-Jun)':{ca:'22 940 €',tva:'4 588 €',ttc:'27 528 €',nb:'16'},
+    'Année 2026':{ca:'98 240 €',tva:'19 648 €',ttc:'117 888 €',nb:'47'},
+    'Année 2025':{ca:'72 400 €',tva:'14 480 €',ttc:'86 880 €',nb:'38'},
+  };
+  const d=data[periode]||data['Mai 2026'];
+  document.getElementById('comp-ca').textContent=d.ca;
+  document.getElementById('comp-tva').textContent=d.tva;
+  document.getElementById('comp-ttc').textContent=d.ttc;
+  document.getElementById('comp-nb').textContent=d.nb;
+}
+function switchView(name){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('view-'+name).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.querySelector(`[data-view="${name}"]`).classList.add('active');
+  document.getElementById('pageTitle').textContent=titles[name]||name;
+}
+document.querySelectorAll('.nav-item[data-view]').forEach(item=>{
+  item.addEventListener('click',()=>switchView(item.dataset.view));
+});
+
+// ========== MODALS ==========
+function openModal(id){document.getElementById(id).classList.add('open')}
+function closeModal(id){document.getElementById(id).classList.remove('open')}
+document.querySelectorAll('.modal-overlay').forEach(o=>{o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open')})});
+
+// ========== TOAST ==========
+function showToast(msg){
+  document.getElementById('toastText').textContent=msg;
+  const t=document.getElementById('toast');
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+// ========== CRUD ==========
+function addDevis(){showToast('✅ Devis créé et envoyé !');closeModal('modal-new-devis')}
+
+function toggleUserMenu(){
+  const m=document.getElementById('userMenu');
+  m.style.display=m.style.display==='none'?'block':'none';
+}
+function doLogout(){
+  if(klaraDB) klaraDB.auth.signOut();
+  const lo=document.getElementById('loginPage');
+  lo.classList.add('show');
+  lo.style.display='flex';
+  lo.style.opacity='1';
+  toggleUserMenu();
+  showToast('👋 À bientôt !');
+}
+document.addEventListener('click',function(e){
+  const menu=document.getElementById('userMenu');
+  if(menu&&!e.target.closest('.sidebar-footer')){menu.style.display='none';}
+});
+
+// ========== LOGIN SUPABASE ==========
+async function doLogin(){
+  const email=document.getElementById('loginEmail').value;
+  const pass=document.getElementById('loginPassword').value;
+  if(!email||!pass){document.getElementById('loginError').style.display='block';return;}
+  
+  // Try Supabase auth first
+  try {
+    const {data,error} = await klaraDB.auth.signInWithPassword({email,password:pass});
+    if(data.user){
+      const lo=document.getElementById('loginPage');
+      lo.style.opacity='0';lo.style.transition='opacity 0.4s';
+      setTimeout(()=>lo.style.display='none',400);
+      showToast('👋 Bienvenue '+data.user.email+' !');
+      return;
+    }
+  } catch(e){}
+  
+  // Fallback demo account
+  if(email==='sophie@klara.fr'&&pass==='password123'){
+    const lo=document.getElementById('loginPage');
+    lo.style.opacity='0';lo.style.transition='opacity 0.4s';
+    setTimeout(()=>lo.style.display='none',400);
+    showToast('👋 Bienvenue Sophie !');
+  } else {
+    document.getElementById('loginError').style.display='block';
+  }
+}
+function togglePass(){const p=document.getElementById('loginPassword');p.type=p.type==='password'?'text':'password'}
+document.getElementById('loginPassword').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin()});
+
+// ========== WAITLIST SUPABASE ==========
+let spots=27;
+async function handleSignup(){
+  const fn=document.getElementById('w-firstName').value.trim();
+  const ln=document.getElementById('w-lastName').value.trim();
+  const em=document.getElementById('w-email').value.trim();
+  const metier=document.getElementById('w-metier').value.trim();
+  if(!fn||!ln||!em){showToast('⚠️ Remplis tous les champs');return}
+  if(!em.includes('@')){showToast('⚠️ Email invalide');return}
+  
+  try {
+    // Créer le compte dans Supabase
+    const {data,error} = await klaraDB.auth.signUp({
+      email: em,
+      password: Math.random().toString(36).slice(-8)+'K!',
+      options: {
+        data: {
+          first_name: fn,
+          last_name: ln,
+          metier: metier,
+          plan: 'fondateur'
+        }
+      }
+    });
+    
+    if(data.user || !error){
+      // Sauvegarder dans la table users
+      await klaraDB.from('users').insert([{
+        email: em,
+        nom: ln,
+        prenom: fn,
+        metier: metier,
+        plan: 'fondateur',
+        created_at: new Date().toISOString()
+      }]);
+    }
+  } catch(e){console.log('Supabase signup:', e)}
+  
+  spots=Math.max(spots-1,0);
+  document.getElementById('spotsLeft').textContent=`⚡ ${spots} places restantes sur 100`;
+  showToast('🎉 Bienvenue parmi les fondateurs !');
+  setTimeout(()=>window.location.href='https://buy.stripe.com/6oUeVcdCL8IAb61fAzfQI00',1500);
+}
+function toggleFaq(el){el.parentElement.classList.toggle('open')}
+
+// ========== CHARTS ==========
+let chartsInit=false;
+function initCharts(){
+  if(chartsInit)return;chartsInit=true;
+  const ctx1=document.getElementById('caChart');
+  if(ctx1){new Chart(ctx1,{type:'line',data:{labels:['Déc','Jan','Fév','Mar','Avr','Mai'],datasets:[{label:'CA (€)',data:[4200,5800,4900,6700,7000,8240],borderColor:'#2563eb',backgroundColor:'rgba(37,99,235,0.08)',borderWidth:2,pointBackgroundColor:'#2563eb',pointRadius:4,tension:0.4,fill:true}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{backgroundColor:'#fff',borderColor:'#c8d8f5',borderWidth:1,titleColor:'#1e3a6e',bodyColor:'#64748b',callbacks:{label:c=>' '+c.parsed.y.toLocaleString('fr-FR')+'€'}}},scales:{x:{grid:{color:'rgba(37,99,235,0.06)'},ticks:{color:'#94a3b8',font:{size:11}}},y:{grid:{color:'rgba(37,99,235,0.06)'},ticks:{color:'#94a3b8',font:{size:11},callback:v=>v/1000+'k€'}}}}})}
+  const ctx2b=document.getElementById('prevChart');
+  if(ctx2b){new Chart(ctx2b,{type:'bar',data:{labels:['Juin','Juillet','Août'],datasets:[{label:'Prévision',data:[9800,10500,11200],backgroundColor:['rgba(37,99,235,0.15)','rgba(37,99,235,0.1)','rgba(37,99,235,0.05)'],borderColor:['#2563eb','#3b82f6','#93c5fd'],borderWidth:2,borderRadius:6},{label:'Objectif',data:[10000,10000,10000],type:'line',borderColor:'rgba(217,119,6,0.5)',borderDash:[5,5],borderWidth:2,pointRadius:0,fill:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{backgroundColor:'#fff',borderColor:'#c8d8f5',borderWidth:1,titleColor:'#1e3a6e',bodyColor:'#64748b'}},scales:{x:{grid:{color:'rgba(37,99,235,0.06)'},ticks:{color:'#94a3b8',font:{size:11}}},y:{grid:{color:'rgba(37,99,235,0.06)'},ticks:{color:'#94a3b8',font:{size:11},callback:v=>v/1000+'k€'}}}}})}
+  const ctx2=document.getElementById('donutChart');
+  if(ctx2){new Chart(ctx2,{type:'doughnut',data:{labels:['Studio Bleu','Pixel Craft','Atelier Nord','Autres'],datasets:[{data:[25,39,17,19],backgroundColor:['#2563eb','#7c3aed','#0891b2','#e2e8f0'],borderColor:'#fff',borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,cutout:'65%',plugins:{legend:{position:'right',labels:{color:'#64748b',font:{size:11},boxWidth:10}},tooltip:{backgroundColor:'#fff',borderColor:'#c8d8f5',borderWidth:1,titleColor:'#1e3a6e',bodyColor:'#64748b'}}}})}
+}
+
+// ========== AI ==========
+async function callClaude(prompt){
+  const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:'Tu es Klara, assistant IA pour freelances français. Génère des devis professionnels concis et convaincants. Réponds directement avec le contenu du devis sans introduction.',messages:[{role:'user',content:prompt}]})});
+  const d=await r.json();
+  return d.content?.map(b=>b.text||'').join('')||'Erreur.';
+}
+async function generateDevisIA(){
+  const client=document.getElementById('ia-client').value||'Client';
+  const type=document.getElementById('ia-type').value;
+  const desc=document.getElementById('ia-desc').value;
+  const budget=document.getElementById('ia-budget').value;
+  const delai=document.getElementById('ia-delai').value;
+  if(!desc){showToast('⚠️ Décris d\'abord ton projet');return}
+  const out=document.getElementById('ia-output');
+  out.innerHTML='<div style="display:flex;align-items:center;gap:0.75rem;color:var(--muted);font-size:0.8rem;padding:1rem"><div class="spinner"></div> Génération en cours...</div>';
+  document.getElementById('ia-copy-btn').style.display='none';
+  try{
+    const result=await callClaude(`Génère un devis pour : Client: ${client}, Type: ${type}, Projet: ${desc}, Budget: ${budget||'non précisé'}€, Paiement: ${delai}. Date: 24 mai 2026.`);
+    out.innerHTML=`<div class="ai-result">${result.replace(/\n/g,'<br>')}</div>`;
+    document.getElementById('ia-copy-btn').style.display='block';
+  }catch(e){out.innerHTML='<div class="ai-result" style="color:var(--red)">Erreur de génération. Vérifie ta connexion.</div>'}
+}
+async function generateModalIA(){
+  const desc=document.getElementById('modal-ia-desc').value;
+  if(!desc){showToast('⚠️ Décris d\'abord ton projet');return}
+  const out=document.getElementById('modal-ia-output');
+  const res=document.getElementById('modal-ia-result');
+  out.style.display='block';
+  res.innerHTML='<div style="display:flex;align-items:center;gap:0.75rem;font-size:0.8rem"><div class="spinner"></div> Génération...</div>';
+  try{const result=await callClaude(`Devis freelance pour : ${desc}. Date: 24 mai 2026.`);res.innerHTML=result.replace(/\n/g,'<br>')}
+  catch(e){res.innerHTML='<span style="color:var(--red)">Erreur.</span>'}
+}
+function copyDevis(){const el=document.querySelector('#ia-output .ai-result');if(el)navigator.clipboard.writeText(el.innerText).then(()=>showToast('📋 Copié !'))}
+
+// ========== SCROLL REVEAL ==========
+const obs=new IntersectionObserver((entries)=>{entries.forEach((e,i)=>{if(e.isIntersecting){setTimeout(()=>e.target.classList.add('visible'),i*80);obs.unobserve(e.target)}})},{threshold:0.1,rootMargin:'0px 0px -40px 0px'});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+
+// ========== STATS COUNTER ==========
+const sObs=new IntersectionObserver((entries)=>{
+  if(entries[0].isIntersecting){
+    document.querySelectorAll('[data-target]').forEach(el=>{
+      const target=+el.dataset.target,suffix=el.dataset.suffix||'';
+      let start=null;
+      const step=(t)=>{if(!start)start=t;const p=Math.min((t-start)/1800,1),e2=1-Math.pow(1-p,3);el.textContent=Math.floor(e2*target)+suffix;if(p<1)requestAnimationFrame(step)};
+      requestAnimationFrame(step);
+    });sObs.disconnect();
+  }},{threshold:0.5});
+const statsEl=document.querySelector('.stats-section');
+if(statsEl)sObs.observe(statsEl);
+
+// ========== INIT ==========
+renderDevis();renderFactures();renderClients();renderRelances();
+</script>
+</body>
+</html>
